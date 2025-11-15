@@ -1,9 +1,7 @@
-// This is a basic Flutter widget test.
+// AlphaZoo Widget Tests
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Basic widget tests for the AlphaZoo app.
+// To run tests: flutter test
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,20 +9,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:alpha_zoo/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('AlphaZoo app smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const AlphaZooApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the app starts (splash screen should be visible)
+    expect(find.byType(MaterialApp), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('AlphaZoo app has correct title', (WidgetTester tester) async {
+    await tester.pumpWidget(const AlphaZooApp());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Find the MaterialApp widget
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+
+    // Verify the app title
+    expect(materialApp.title, 'AlphaZoo');
   });
 }
