@@ -18,6 +18,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  final ScrollController _scrollController = ScrollController();
+  bool _isScrolled = false;
 
   @override
   void initState() {
@@ -27,11 +29,22 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
     );
     _animationController.forward();
+
+    // Listen to scroll for app bar color change
+    _scrollController.addListener(() {
+      final scrolled = _scrollController.offset > 20;
+      if (scrolled != _isScrolled) {
+        setState(() {
+          _isScrolled = scrolled;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -44,9 +57,11 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: _buildAppBar(context),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.horizontalPadding,
-            vertical: responsive.verticalPadding,
+          padding: EdgeInsets.only(
+            left: responsive.horizontalPadding,
+            right: responsive.horizontalPadding,
+            top: responsive.verticalPadding,
+            bottom: 0, // Remove bottom padding
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,23 +78,31 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  /// Build app bar
+  /// Build app bar with scroll-based color change
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
+      backgroundColor: _isScrolled 
+          ? const Color(0xFFFFF3D0).withOpacity(0.95) // Yellow when scrolled
+          : Colors.transparent,
+      elevation: _isScrolled ? 4 : 0,
+      shadowColor: _isScrolled ? Colors.orange.withOpacity(0.2) : null,
       title: Row(
         children: [
-          Image.asset(
-            'assets/images/app_logo.png',
-            height: 36,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(
-                Icons.menu_book_rounded,
-                color: AppColors.primary,
-                size: 36,
-              );
-            },
+          // Bounce animation on logo
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: Image.asset(
+              'assets/images/app_logo.png',
+              height: 36,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.menu_book_rounded,
+                  color: AppColors.primary,
+                  size: 36,
+                );
+              },
+            ),
           ),
           const SizedBox(width: 12),
           Text(
@@ -129,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen>
   /// Build letter grid
   Widget _buildLetterGrid(BuildContext context, Responsive responsive) {
     return GridView.builder(
+      controller: _scrollController, // Attach scroll controller
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: responsive.gridCrossAxisCount,
         crossAxisSpacing: responsive.gridSpacing,
@@ -136,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen>
         childAspectRatio: 1.0,
       ),
       itemCount: AlphabetData.count,
+      padding: EdgeInsets.only(bottom: 20),
       itemBuilder: (context, index) {
         final item = AlphabetData.getItem(index);
         final delay = index * 30;

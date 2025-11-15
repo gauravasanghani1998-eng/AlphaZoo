@@ -13,7 +13,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.1.0
   lottie: ^3.0.0
-  flame: ^1.16.0
 
 dev_dependencies:
   flutter_test:
@@ -28,32 +27,32 @@ flutter:
     - assets/images/
     - assets/images/app_logo.png
     - assets/images/placeholder.png
-#    - assets/images/a.png
-#    - assets/images/b.png
-#    - assets/images/c.png
-#    - assets/images/d.png
-#    - assets/images/e.png
-#    - assets/images/f.png
-#    - assets/images/g.png
-#    - assets/images/h.png
-#    - assets/images/i.png
-#    - assets/images/j.png
-#    - assets/images/k.png
-#    - assets/images/l.png
-#    - assets/images/m.png
-#    - assets/images/n.png
-#    - assets/images/o.png
-#    - assets/images/p.png
-#    - assets/images/q.png
-#    - assets/images/r.png
-#    - assets/images/s.png
-#    - assets/images/t.png
-#    - assets/images/u.png
-#    - assets/images/v.png
-#    - assets/images/w.png
-#    - assets/images/x.png
-#    - assets/images/y.png
-#    - assets/images/z.png
+    - assets/images/a.png
+    - assets/images/b.png
+    - assets/images/c.png
+    - assets/images/d.png
+    - assets/images/e.png
+    - assets/images/f.png
+    - assets/images/g.png
+    - assets/images/h.png
+    - assets/images/i.png
+    - assets/images/j.png
+    - assets/images/k.png
+    - assets/images/l.png
+    - assets/images/m.png
+    - assets/images/n.png
+    - assets/images/o.png
+    - assets/images/p.png
+    - assets/images/q.png
+    - assets/images/r.png
+    - assets/images/s.png
+    - assets/images/t.png
+    - assets/images/u.png
+    - assets/images/v.png
+    - assets/images/w.png
+    - assets/images/x.png
+    - assets/images/y.png
+    - assets/images/z.png
     
     
     # Lottie (optional)
