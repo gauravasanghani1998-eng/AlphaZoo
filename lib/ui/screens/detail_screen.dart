@@ -4,6 +4,7 @@ import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/alphabet_data.dart';
 import '../../utils/responsive.dart';
+import '../../utils/haptic_feedback.dart';
 
 /// Detail screen showing letter information with animations
 class DetailScreen extends StatefulWidget {
@@ -39,11 +40,11 @@ class _DetailScreenState extends State<DetailScreen>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotateAnimation;
-  
+
   // Current animation type
   AnimationType _currentAnimationType = AnimationType.slideFromBottom;
   final math.Random _random = math.Random();
-  
+
   // Scroll controller for app bar color change
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
@@ -141,6 +142,9 @@ class _DetailScreenState extends State<DetailScreen>
   void _changeLetter(int newIndex) {
     if (newIndex < 0 || newIndex >= AlphabetData.count) return;
 
+    // Provide haptic feedback for learning progress
+    AppHapticFeedback.success(); // Success feedback for learning new letters
+
     // Scroll to top immediately
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(0);
@@ -148,7 +152,8 @@ class _DetailScreenState extends State<DetailScreen>
 
     // Pick a random animation type
     final animationTypes = AnimationType.values;
-    _currentAnimationType = animationTypes[_random.nextInt(animationTypes.length)];
+    _currentAnimationType =
+        animationTypes[_random.nextInt(animationTypes.length)];
 
     setState(() {
       _currentIndex = newIndex;
@@ -166,7 +171,8 @@ class _DetailScreenState extends State<DetailScreen>
     final item = AlphabetData.getItem(_currentIndex);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF8E1), // Warm cream yellow matching images
+      backgroundColor:
+          const Color(0xFFFFF8E1), // Warm cream yellow matching images
       appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
@@ -278,24 +284,28 @@ class _DetailScreenState extends State<DetailScreen>
   /// Build app bar with scroll-based color change
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: _isScrolled 
-          ? AppColors.getLetterColor(_currentIndex).withOpacity(0.9) 
+      backgroundColor: _isScrolled
+          ? AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.9)
           : const Color(0xFFFFF3D0),
       elevation: _isScrolled ? 6 : 2,
-      shadowColor: _isScrolled 
-          ? AppColors.getLetterColor(_currentIndex).withOpacity(0.3)
-          : Colors.orange.withOpacity(0.1),
+      shadowColor: _isScrolled
+          ? AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.3)
+          : Colors.orange.withValues(alpha: 0.1),
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back_ios_new_rounded,
-          color: _isScrolled ? Colors.white : AppColors.getLetterColor(_currentIndex),
+          color: _isScrolled
+              ? Colors.white
+              : AppColors.getLetterColor(_currentIndex),
         ),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Text(
         'Letter ${AlphabetData.getItem(_currentIndex).letter}',
         style: AppTextStyles.heading3.copyWith(
-          color: _isScrolled ? Colors.white : AppColors.getLetterColor(_currentIndex),
+          color: _isScrolled
+              ? Colors.white
+              : AppColors.getLetterColor(_currentIndex),
         ),
       ),
       centerTitle: true,
@@ -314,13 +324,13 @@ class _DetailScreenState extends State<DetailScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            letterColor.withOpacity(0.1),
-            letterColor.withOpacity(0.05),
+            letterColor.withValues(alpha: 0.1),
+            letterColor.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: letterColor.withOpacity(0.3),
+          color: letterColor.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -355,9 +365,10 @@ class _DetailScreenState extends State<DetailScreen>
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: letterColor.withOpacity(0.2),
+                  color: letterColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -377,7 +388,7 @@ class _DetailScreenState extends State<DetailScreen>
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: letterColor.withOpacity(0.2),
+              backgroundColor: letterColor.withValues(alpha: 0.2),
               valueColor: AlwaysStoppedAnimation<Color>(letterColor),
             ),
           ),
@@ -406,14 +417,14 @@ class _DetailScreenState extends State<DetailScreen>
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            letterColor.withOpacity(0.8),
+            letterColor.withValues(alpha: 0.8),
             letterColor,
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: letterColor.withOpacity(0.3),
+            color: letterColor.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -442,7 +453,7 @@ class _DetailScreenState extends State<DetailScreen>
   /// Build decorative divider
   Widget _buildDivider() {
     final letterColor = AppColors.getLetterColor(_currentIndex);
-    
+
     return Row(
       children: [
         Expanded(
@@ -454,7 +465,7 @@ class _DetailScreenState extends State<DetailScreen>
                 end: Alignment.centerRight,
                 colors: [
                   Colors.transparent,
-                  letterColor.withOpacity(0.5),
+                  letterColor.withValues(alpha: 0.5),
                   letterColor,
                 ],
               ),
@@ -466,7 +477,7 @@ class _DetailScreenState extends State<DetailScreen>
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: letterColor.withOpacity(0.2),
+              color: letterColor.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -485,7 +496,7 @@ class _DetailScreenState extends State<DetailScreen>
                 end: Alignment.centerRight,
                 colors: [
                   letterColor,
-                  letterColor.withOpacity(0.5),
+                  letterColor.withValues(alpha: 0.5),
                   Colors.transparent,
                 ],
               ),
@@ -499,30 +510,34 @@ class _DetailScreenState extends State<DetailScreen>
   /// Build improved celebration message with multiple elements
   Widget _buildCelebrationMessage() {
     final letterColor = AppColors.getLetterColor(_currentIndex);
-    final isVowel = 'AEIOU'.contains(AlphabetData.getItem(_currentIndex).letter.toUpperCase());
-    final currentLetter = AlphabetData.getItem(_currentIndex).letter.toUpperCase();
+    final isVowel = 'AEIOU'
+        .contains(AlphabetData.getItem(_currentIndex).letter.toUpperCase());
+    final currentLetter =
+        AlphabetData.getItem(_currentIndex).letter.toUpperCase();
     final hasNext = _currentIndex < 25;
-    final nextLetter = hasNext ? AlphabetData.getItem(_currentIndex + 1).letter.toUpperCase() : '';
-    
+    final nextLetter = hasNext
+        ? AlphabetData.getItem(_currentIndex + 1).letter.toUpperCase()
+        : '';
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            letterColor.withOpacity(0.2),
-            letterColor.withOpacity(0.05),
+            letterColor.withValues(alpha: 0.2),
+            letterColor.withValues(alpha: 0.05),
             Colors.white,
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: letterColor.withOpacity(0.4),
+          color: letterColor.withValues(alpha: 0.4),
           width: 3,
         ),
         boxShadow: [
           BoxShadow(
-            color: letterColor.withOpacity(0.2),
+            color: letterColor.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -534,24 +549,28 @@ class _DetailScreenState extends State<DetailScreen>
           Positioned(
             top: 15,
             left: 15,
-            child: Icon(Icons.star, color: letterColor.withOpacity(0.3), size: 24),
+            child: Icon(Icons.star,
+                color: letterColor.withValues(alpha: 0.3), size: 24),
           ),
           Positioned(
             top: 15,
             right: 15,
-            child: Icon(Icons.star, color: letterColor.withOpacity(0.3), size: 24),
+            child: Icon(Icons.star,
+                color: letterColor.withValues(alpha: 0.3), size: 24),
           ),
           Positioned(
             bottom: 15,
             left: 15,
-            child: Icon(Icons.star, color: letterColor.withOpacity(0.3), size: 24),
+            child: Icon(Icons.star,
+                color: letterColor.withValues(alpha: 0.3), size: 24),
           ),
           Positioned(
             bottom: 15,
             right: 15,
-            child: Icon(Icons.star, color: letterColor.withOpacity(0.3), size: 24),
+            child: Icon(Icons.star,
+                color: letterColor.withValues(alpha: 0.3), size: 24),
           ),
-          
+
           // Main content
           Padding(
             padding: const EdgeInsets.all(24),
@@ -569,20 +588,22 @@ class _DetailScreenState extends State<DetailScreen>
                           end: Alignment.bottomRight,
                           colors: [
                             letterColor,
-                            letterColor.withOpacity(0.7),
+                            letterColor.withValues(alpha: 0.7),
                           ],
                         ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: letterColor.withOpacity(0.4),
+                            color: letterColor.withValues(alpha: 0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Icon(
-                        isVowel ? Icons.favorite_rounded : Icons.emoji_events_rounded,
+                        isVowel
+                            ? Icons.favorite_rounded
+                            : Icons.emoji_events_rounded,
                         color: Colors.white,
                         size: 48,
                       ),
@@ -590,7 +611,8 @@ class _DetailScreenState extends State<DetailScreen>
                     Positioned(
                       bottom: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -608,9 +630,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Celebration text
                 Text(
                   '🎊 Amazing Work! 🎊',
@@ -622,17 +644,18 @@ class _DetailScreenState extends State<DetailScreen>
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Achievement message
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
-                    color: letterColor.withOpacity(0.1),
+                    color: letterColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: letterColor.withOpacity(0.3),
+                      color: letterColor.withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),
@@ -646,9 +669,9 @@ class _DetailScreenState extends State<DetailScreen>
                     textAlign: TextAlign.center,
                   ),
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Special badge for vowels or achievement
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -668,13 +691,16 @@ class _DetailScreenState extends State<DetailScreen>
                     ],
                   ],
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Divider with hearts
                 Row(
                   children: [
-                    Expanded(child: Divider(color: letterColor.withOpacity(0.3), thickness: 2)),
+                    Expanded(
+                        child: Divider(
+                            color: letterColor.withValues(alpha: 0.3),
+                            thickness: 2)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
@@ -682,12 +708,15 @@ class _DetailScreenState extends State<DetailScreen>
                         style: const TextStyle(fontSize: 20),
                       ),
                     ),
-                    Expanded(child: Divider(color: letterColor.withOpacity(0.3), thickness: 2)),
+                    Expanded(
+                        child: Divider(
+                            color: letterColor.withValues(alpha: 0.3),
+                            thickness: 2)),
                   ],
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Next letter preview or completion message
                 if (hasNext)
                   Container(
@@ -696,19 +725,20 @@ class _DetailScreenState extends State<DetailScreen>
                       gradient: LinearGradient(
                         colors: [
                           Colors.white,
-                          letterColor.withOpacity(0.05),
+                          letterColor.withValues(alpha: 0.05),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: letterColor.withOpacity(0.2),
+                        color: letterColor.withValues(alpha: 0.2),
                         width: 2,
                       ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.arrow_forward_rounded, color: letterColor, size: 24),
+                        Icon(Icons.arrow_forward_rounded,
+                            color: letterColor, size: 24),
                         const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -717,7 +747,7 @@ class _DetailScreenState extends State<DetailScreen>
                               'Next Adventure:',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: letterColor.withOpacity(0.7),
+                                color: letterColor.withValues(alpha: 0.7),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -735,7 +765,7 @@ class _DetailScreenState extends State<DetailScreen>
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: letterColor.withOpacity(0.2),
+                            color: letterColor.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Text(
@@ -756,13 +786,13 @@ class _DetailScreenState extends State<DetailScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.purple.withOpacity(0.2),
-                          Colors.pink.withOpacity(0.1),
+                          Colors.purple.withValues(alpha: 0.2),
+                          Colors.pink.withValues(alpha: 0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.purple.withOpacity(0.3),
+                        color: Colors.purple.withValues(alpha: 0.3),
                         width: 2,
                       ),
                     ),
@@ -782,7 +812,7 @@ class _DetailScreenState extends State<DetailScreen>
                           'You completed the entire alphabet!',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.purple.withOpacity(0.8),
+                            color: Colors.purple.withValues(alpha: 0.8),
                             fontWeight: FontWeight.w600,
                           ),
                           textAlign: TextAlign.center,
@@ -810,13 +840,13 @@ class _DetailScreenState extends State<DetailScreen>
         gradient: LinearGradient(
           colors: [
             color,
-            color.withOpacity(0.8),
+            color.withValues(alpha: 0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -853,19 +883,20 @@ class _DetailScreenState extends State<DetailScreen>
             end: Alignment.bottomRight,
             colors: [
               AppColors.getLetterColor(_currentIndex),
-              AppColors.getLetterColor(_currentIndex).withOpacity(0.7),
+              AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.7),
             ],
           ),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.getLetterColor(_currentIndex).withOpacity(0.3),
+              color: AppColors.getLetterColor(_currentIndex)
+                  .withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Center(  
+        child: Center(
           child: Text(
             item.letter,
             style: AppTextStyles.detailLetter.copyWith(
@@ -873,7 +904,7 @@ class _DetailScreenState extends State<DetailScreen>
               color: Colors.white,
               shadows: [
                 Shadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   offset: const Offset(2, 2),
                   blurRadius: 4,
                 ),
@@ -901,12 +932,12 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.2),
+          color: Colors.orange.withValues(alpha: 0.2),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.15),
+            color: Colors.orange.withValues(alpha: 0.15),
             blurRadius: 20,
             spreadRadius: 0,
             offset: const Offset(0, 8),
@@ -948,13 +979,13 @@ class _DetailScreenState extends State<DetailScreen>
                           Icon(
                             Icons.image_not_supported_rounded,
                             size: 64,
-                            color: Colors.orange.withOpacity(0.5),
+                            color: Colors.orange.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Image coming soon!',
                             style: TextStyle(
-                              color: Colors.orange.withOpacity(0.7),
+                              color: Colors.orange.withValues(alpha: 0.7),
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -966,7 +997,7 @@ class _DetailScreenState extends State<DetailScreen>
                 },
               ),
             ),
-            
+
             // Bottom-right decorative badge (covers Gemini logo)
             Positioned(
               bottom: 8,
@@ -993,7 +1024,7 @@ class _DetailScreenState extends State<DetailScreen>
           end: Alignment.bottomRight,
           colors: [
             badgeColor,
-            badgeColor.withOpacity(0.8),
+            badgeColor.withValues(alpha: 0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -1003,7 +1034,7 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -1017,7 +1048,7 @@ class _DetailScreenState extends State<DetailScreen>
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -1044,7 +1075,7 @@ class _DetailScreenState extends State<DetailScreen>
               Text(
                 isVowel ? 'Vowel' : 'Letter',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   height: 1.1,
@@ -1086,12 +1117,12 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.2),
+          color: Colors.orange.withValues(alpha: 0.2),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             blurRadius: 15,
             spreadRadius: 0,
             offset: const Offset(0, 6),
@@ -1149,12 +1180,12 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.25),
+          color: Colors.orange.withValues(alpha: 0.25),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             blurRadius: 15,
             spreadRadius: 0,
             offset: const Offset(0, 6),
@@ -1217,12 +1248,12 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.2),
+          color: Colors.orange.withValues(alpha: 0.2),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             blurRadius: 15,
             spreadRadius: 0,
             offset: const Offset(0, 6),
@@ -1251,7 +1282,7 @@ class _DetailScreenState extends State<DetailScreen>
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Letter position and type
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1267,9 +1298,9 @@ class _DetailScreenState extends State<DetailScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // More words section
           Column(
             children: [
@@ -1285,7 +1316,8 @@ class _DetailScreenState extends State<DetailScreen>
                 spacing: 8,
                 runSpacing: 8,
                 alignment: WrapAlignment.center,
-                children: moreWords.map((word) => _buildWordChip(word)).toList(),
+                children:
+                    moreWords.map((word) => _buildWordChip(word)).toList(),
               ),
             ],
           ),
@@ -1301,8 +1333,8 @@ class _DetailScreenState extends State<DetailScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.getLetterColor(_currentIndex).withOpacity(0.2),
-            AppColors.getLetterColor(_currentIndex).withOpacity(0.1),
+            AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.2),
+            AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -1334,10 +1366,10 @@ class _DetailScreenState extends State<DetailScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.getLetterColor(_currentIndex).withOpacity(0.1),
+        color: AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.getLetterColor(_currentIndex).withOpacity(0.3),
+          color: AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -1418,7 +1450,7 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -1460,11 +1492,18 @@ class _DetailScreenState extends State<DetailScreen>
   }) {
     final isEnabled = onPressed != null;
 
+    void _handleTap() {
+      if (onPressed != null) {
+        AppHapticFeedback.medium(); // Medium feedback for navigation
+        onPressed();
+      }
+    }
+
     return GestureDetector(
       onTapDown: isEnabled ? (_) => _scaleController.forward() : null,
       onTapUp: isEnabled ? (_) => _scaleController.reverse() : null,
       onTapCancel: isEnabled ? () => _scaleController.reverse() : null,
-      onTap: onPressed,
+      onTap: _handleTap,
       child: AnimatedBuilder(
         animation: _scaleController,
         builder: (context, child) {
@@ -1481,7 +1520,7 @@ class _DetailScreenState extends State<DetailScreen>
                     colors: [
                       AppColors.getLetterColor(_currentIndex),
                       AppColors.getLetterColor(_currentIndex)
-                          .withOpacity(0.8),
+                          .withValues(alpha: 0.8),
                     ],
                   )
                 : null,
@@ -1491,7 +1530,7 @@ class _DetailScreenState extends State<DetailScreen>
                 ? [
                     BoxShadow(
                       color: AppColors.getLetterColor(_currentIndex)
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -1501,8 +1540,7 @@ class _DetailScreenState extends State<DetailScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (!isNext)
-                Icon(icon, color: Colors.white, size: 20),
+              if (!isNext) Icon(icon, color: Colors.white, size: 20),
               if (!isNext) const SizedBox(width: 8),
               Text(
                 label,

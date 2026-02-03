@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
           Positioned.fill(
             child: _buildFlameBackground(),
           ),
-          
+
           // Logo animation
           Center(
             child: AnimatedBuilder(
@@ -115,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -150,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
             end: Alignment.bottomRight,
             colors: [
               AppColors.primary,
-              AppColors.secondary.withOpacity(0.3),
+              AppColors.secondary.withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -164,7 +164,7 @@ class SplashFlameGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    
+
     // Add floating particles/stars
     try {
       for (int i = 0; i < 20; i++) {
@@ -177,7 +177,7 @@ class SplashFlameGame extends FlameGame {
 }
 
 /// Floating particle component for splash animation
-class FloatingParticle extends PositionComponent with HasGameRef {
+class FloatingParticle extends PositionComponent with HasGameReference {
   final int index;
   late Vector2 velocity;
   late double opacity;
@@ -191,8 +191,8 @@ class FloatingParticle extends PositionComponent with HasGameRef {
     // Random position
     final random = DateTime.now().millisecondsSinceEpoch + index;
     position = Vector2(
-      (random % gameRef.size.x.toInt()).toDouble(),
-      (random % gameRef.size.y.toInt()).toDouble(),
+      (random % game.size.x.toInt()).toDouble(),
+      (random % game.size.y.toInt()).toDouble(),
     );
 
     // Random velocity
@@ -212,10 +212,10 @@ class FloatingParticle extends PositionComponent with HasGameRef {
     position += velocity;
 
     // Wrap around screen
-    if (position.y < 0) position.y = gameRef.size.y;
-    if (position.y > gameRef.size.y) position.y = 0;
-    if (position.x < 0) position.x = gameRef.size.x;
-    if (position.x > gameRef.size.x) position.x = 0;
+    if (position.y < 0) position.y = game.size.y;
+    if (position.y > game.size.y) position.y = 0;
+    if (position.x < 0) position.x = game.size.x;
+    if (position.x > game.size.x) position.x = 0;
   }
 
   @override
@@ -223,7 +223,7 @@ class FloatingParticle extends PositionComponent with HasGameRef {
     super.render(canvas);
 
     final paint = Paint()
-      ..color = Colors.white.withOpacity(opacity)
+      ..color = Colors.white.withValues(alpha: opacity)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(
@@ -233,4 +233,3 @@ class FloatingParticle extends PositionComponent with HasGameRef {
     );
   }
 }
-

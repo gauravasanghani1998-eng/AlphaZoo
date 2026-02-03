@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../utils/responsive.dart';
+import '../../utils/connectivity_helper.dart';
 
 /// About screen with app information and credits
 class AboutScreen extends StatefulWidget {
@@ -43,10 +44,10 @@ class _AboutScreenState extends State<AboutScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: _isScrolled
-            ? const Color(0xFFFFF3D0).withOpacity(0.95)
+            ? const Color(0xFFFFF3D0).withValues(alpha: 0.95)
             : Colors.transparent,
         elevation: _isScrolled ? 4 : 0,
-        shadowColor: _isScrolled ? Colors.orange.withOpacity(0.2) : null,
+        shadowColor: _isScrolled ? Colors.orange.withValues(alpha: 0.2) : null,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.of(context).pop(),
@@ -91,8 +92,7 @@ class _AboutScreenState extends State<AboutScreen> {
               _buildInfoCard(
                 title: '🎯 Educational Benefits',
                 icon: Icons.stars_rounded,
-                content:
-                    '✓ Builds vocabulary and reading skills\n'
+                content: '✓ Builds vocabulary and reading skills\n'
                     '✓ Improves letter recognition\n'
                     '✓ Enhances visual memory\n'
                     '✓ Develops phonetic awareness\n'
@@ -101,10 +101,19 @@ class _AboutScreenState extends State<AboutScreen> {
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
+                title: '📱 Offline Support',
+                icon: Icons.wifi_off_rounded,
+                content: '✓ Works completely offline\n'
+                    '✓ No internet connection required\n'
+                    '✓ All content cached locally\n'
+                    '✓ Fast loading and smooth performance\n'
+                    '✓ Available anywhere, anytime',
+              ),
+              const SizedBox(height: 20),
+              _buildInfoCard(
                 title: '🎨 How to Use',
                 icon: Icons.touch_app_rounded,
-                content:
-                    '1️⃣ Tap any letter on the home screen\n'
+                content: '1️⃣ Tap any letter on the home screen\n'
                     '2️⃣ Explore the colorful illustration\n'
                     '3️⃣ Read the word and description\n'
                     '4️⃣ Learn fun facts about each item\n'
@@ -172,7 +181,7 @@ class _AboutScreenState extends State<AboutScreen> {
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.orange.withOpacity(0.2),
+          color: Colors.orange.withValues(alpha: 0.2),
           width: 2,
         ),
         boxShadow: [
@@ -246,4 +255,3 @@ class _AboutScreenState extends State<AboutScreen> {
     );
   }
 }
-

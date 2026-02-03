@@ -3,16 +3,20 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/app_colors.dart';
 import 'ui/screens/splash_screen.dart';
+import 'utils/asset_preloader.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set preferred orientations
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
+  // Preload assets for offline use
+  await AssetPreloader.preloadAssets();
+
   runApp(const AlphaZooApp());
 }
 

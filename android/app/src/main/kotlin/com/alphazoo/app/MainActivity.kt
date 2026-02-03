@@ -1,4 +1,4 @@
-package com.app.alphazoo.alpha_zoo
+package com.alphazoo.app
 
 import io.flutter.embedding.android.FlutterActivity
 

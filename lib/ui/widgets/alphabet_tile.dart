@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/alphabet_data.dart';
+import '../../utils/haptic_feedback.dart';
 
 /// Individual alphabet tile for grid display
 class AlphabetTile extends StatefulWidget {
@@ -49,6 +50,7 @@ class _AlphabetTileState extends State<AlphabetTile>
 
   void _handleTapUp(TapUpDetails details) {
     _scaleController.reverse();
+    AppHapticFeedback.light(); // Light feedback for tile taps
     widget.onTap();
   }
 
@@ -81,13 +83,13 @@ class _AlphabetTileState extends State<AlphabetTile>
                 end: Alignment.bottomRight,
                 colors: [
                   color,
-                  color.withOpacity(0.8),
+                  color.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.4),
+                  color: color.withValues(alpha: 0.4),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -99,7 +101,7 @@ class _AlphabetTileState extends State<AlphabetTile>
                 style: AppTextStyles.tileLetter.copyWith(
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       offset: const Offset(2, 2),
                       blurRadius: 4,
                     ),
@@ -113,4 +115,3 @@ class _AlphabetTileState extends State<AlphabetTile>
     );
   }
 }
-

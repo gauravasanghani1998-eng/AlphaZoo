@@ -23,13 +23,13 @@ class BigLetterWidget extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             color,
-            color.withOpacity(0.7),
+            color.withValues(alpha:0.7),
           ],
         ),
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.4),
+            color: color.withValues(alpha:0.4),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -42,7 +42,7 @@ class BigLetterWidget extends StatelessWidget {
             color: Colors.white,
             shadows: [
               Shadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha:0.3),
                 offset: const Offset(3, 3),
                 blurRadius: 6,
               ),

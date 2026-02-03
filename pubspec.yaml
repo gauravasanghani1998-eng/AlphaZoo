@@ -1,11 +1,11 @@
 name: alpha_zoo
 description: "AlphaZoo - A-Z Alphabet learning app for kids"
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -13,6 +13,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.1.0
   lottie: ^3.0.0
+  flame: ^1.33.0
+  vibration: ^3.1.5
+  connectivity_plus: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -53,10 +56,9 @@ flutter:
     - assets/images/x.png
     - assets/images/y.png
     - assets/images/z.png
-    
-    
+
     # Lottie (optional)
     - assets/lottie/
-    
+
     # Flame (optional)
     - assets/flame/

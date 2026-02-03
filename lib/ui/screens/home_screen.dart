@@ -3,6 +3,7 @@ import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/alphabet_data.dart';
 import '../../utils/responsive.dart';
+import '../../utils/haptic_feedback.dart';
 import '../widgets/alphabet_tile.dart';
 import 'about_screen.dart';
 import 'detail_screen.dart';
@@ -81,11 +82,11 @@ class _HomeScreenState extends State<HomeScreen>
   /// Build app bar with scroll-based color change
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: _isScrolled 
-          ? const Color(0xFFFFF3D0).withOpacity(0.95) // Yellow when scrolled
+      backgroundColor: _isScrolled
+          ? const Color(0xFFFFF3D0).withValues(alpha: 0.95)
           : Colors.transparent,
       elevation: _isScrolled ? 4 : 0,
-      shadowColor: _isScrolled ? Colors.orange.withOpacity(0.2) : null,
+      shadowColor: _isScrolled ? Colors.orange.withValues(alpha: 0.2) : null,
       title: Row(
         children: [
           // Bounce animation on logo
@@ -117,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
         IconButton(
           icon: const Icon(Icons.info_outline, color: AppColors.primary),
           onPressed: () {
+            AppHapticFeedback.light(); // Light feedback for info button
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const AboutScreen(),
@@ -152,7 +154,8 @@ class _HomeScreenState extends State<HomeScreen>
   /// Build letter grid
   Widget _buildLetterGrid(BuildContext context, Responsive responsive) {
     return GridView.builder(
-      controller: _scrollController, // Attach scroll controller
+      controller: _scrollController,
+      // Attach scroll controller
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: responsive.gridCrossAxisCount,
         crossAxisSpacing: responsive.gridSpacing,
@@ -216,4 +219,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
