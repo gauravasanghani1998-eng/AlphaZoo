@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../utils/responsive.dart';
-import '../../utils/connectivity_helper.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_screen.dart';
 
 /// About screen with app information and credits
 class AboutScreen extends StatefulWidget {
@@ -49,11 +51,12 @@ class _AboutScreenState extends State<AboutScreen> {
         elevation: _isScrolled ? 4 : 0,
         shadowColor: _isScrolled ? Colors.orange.withValues(alpha: 0.2) : null,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppColors.primary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'About',
+          'about.title'.tr(),
           style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
         ),
         centerTitle: true,
@@ -71,54 +74,33 @@ class _AboutScreenState extends State<AboutScreen> {
               _buildLogo(),
               const SizedBox(height: 32),
               _buildInfoCard(
-                title: '🎓 AlphaZoo',
+                title: 'about.appCardTitle'.tr(),
                 icon: Icons.school_rounded,
-                content:
-                    'An interactive A-Z alphabet learning app designed for kids. '
-                    'Each letter comes with colorful illustrations, fun words, and educational facts to make learning engaging and memorable!',
+                content: 'about.appCardBody'.tr(),
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
-                title: '📚 Learning Features',
+                title: 'about.featuresTitle'.tr(),
                 icon: Icons.library_books_rounded,
-                content:
-                    '• Visual Learning: Beautiful illustrations for each letter\n'
-                    '• Fun Facts: Interesting trivia about words and objects\n'
-                    '• Word Examples: Multiple words starting with each letter\n'
-                    '• Letter Types: Learn vowels and consonants\n'
-                    '• Interactive: Tap, swipe, and explore at your own pace',
+                content: 'about.featuresBody'.tr(),
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
-                title: '🎯 Educational Benefits',
+                title: 'about.benefitsTitle'.tr(),
                 icon: Icons.stars_rounded,
-                content: '✓ Builds vocabulary and reading skills\n'
-                    '✓ Improves letter recognition\n'
-                    '✓ Enhances visual memory\n'
-                    '✓ Develops phonetic awareness\n'
-                    '✓ Encourages independent learning\n'
-                    '✓ Suitable for ages 3-7 years',
+                content: 'about.benefitsBody'.tr(),
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
-                title: '📱 Offline Support',
+                title: 'about.offlineTitle'.tr(),
                 icon: Icons.wifi_off_rounded,
-                content: '✓ Works completely offline\n'
-                    '✓ No internet connection required\n'
-                    '✓ All content cached locally\n'
-                    '✓ Fast loading and smooth performance\n'
-                    '✓ Available anywhere, anytime',
+                content: 'about.offlineBody'.tr(),
               ),
               const SizedBox(height: 20),
               _buildInfoCard(
-                title: '🎨 How to Use',
+                title: 'about.howToUseTitle'.tr(),
                 icon: Icons.touch_app_rounded,
-                content: '1️⃣ Tap any letter on the home screen\n'
-                    '2️⃣ Explore the colorful illustration\n'
-                    '3️⃣ Read the word and description\n'
-                    '4️⃣ Learn fun facts about each item\n'
-                    '5️⃣ Use Next/Previous to browse letters\n'
-                    '6️⃣ Enjoy random animations on every transition!',
+                content: 'about.howToUseBody'.tr(),
               ),
               const SizedBox(height: 32),
               _buildFooter(),
@@ -235,23 +217,77 @@ class _AboutScreenState extends State<AboutScreen> {
 
   /// Build footer
   Widget _buildFooter() {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            'Version 1.0.0',
-            style: AppTextStyles.caption,
+    return Column(
+      children: [
+        Center(
+          child: Column(
+            children: [
+              Text(
+                'Version 1.0.0',
+                style: AppTextStyles.caption,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Made with ❤️ for curious kids',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Made with ❤️ for curious kids',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.7),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const PrivacyPolicyScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                'Privacy Policy',
+                style: AppTextStyles.bodyBold.copyWith(fontSize: 14),
+              ),
             ),
-          ),
-        ],
-      ),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.7),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const TermsScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                'Terms & Conditions',
+                style: AppTextStyles.bodyBold.copyWith(fontSize: 14),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

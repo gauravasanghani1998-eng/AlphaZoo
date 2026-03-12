@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  easy_localization: ^3.0.7
+  flutter_tts: ^4.0.2
   cupertino_icons: ^1.0.8
   google_fonts: ^6.1.0
   lottie: ^3.0.0
@@ -62,3 +64,5 @@ flutter:
 
     # Flame (optional)
     - assets/flame/
+    # Localization
+    - assets/translations/

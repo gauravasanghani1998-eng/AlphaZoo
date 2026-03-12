@@ -1,15 +1,17 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'core/app_colors.dart';
 import 'ui/screens/splash_screen.dart';
 import 'utils/asset_preloader.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set preferred orientations
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
@@ -17,7 +19,24 @@ void main() async {
   // Preload assets for offline use
   await AssetPreloader.preloadAssets();
 
-  runApp(const AlphaZooApp());
+  // Initialize easy_localization
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('hi'),
+        Locale('mr'),
+        Locale('pa'),
+        Locale('ta'),
+        Locale('gu'),
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: const AlphaZooApp(),
+    ),
+  );
 }
 
 class AlphaZooApp extends StatelessWidget {
@@ -26,8 +45,11 @@ class AlphaZooApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AlphaZoo',
+      title: 'Kids Learning World',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
         primaryColor: AppColors.primary,
         scaffoldBackgroundColor: AppColors.background,

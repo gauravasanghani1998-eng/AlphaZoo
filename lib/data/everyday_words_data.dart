@@ -1,0 +1,147 @@
+/// Simple word item used for days, months, family and greetings.
+class WordItem {
+  final String text;
+  final String? subtitle;
+  final String? emoji;
+
+  const WordItem({
+    required this.text,
+    this.subtitle,
+    this.emoji,
+  });
+}
+
+class EverydayWordsData {
+  EverydayWordsData._();
+
+  static const List<WordItem> days = [
+    WordItem(text: 'Monday'),
+    WordItem(text: 'Tuesday'),
+    WordItem(text: 'Wednesday'),
+    WordItem(text: 'Thursday'),
+    WordItem(text: 'Friday'),
+    WordItem(text: 'Saturday'),
+    WordItem(text: 'Sunday'),
+  ];
+
+  static const List<WordItem> months = [
+    WordItem(text: 'January'),
+    WordItem(text: 'February'),
+    WordItem(text: 'March'),
+    WordItem(text: 'April'),
+    WordItem(text: 'May'),
+    WordItem(text: 'June'),
+    WordItem(text: 'July'),
+    WordItem(text: 'August'),
+    WordItem(text: 'September'),
+    WordItem(text: 'October'),
+    WordItem(text: 'November'),
+    WordItem(text: 'December'),
+  ];
+
+  static const List<WordItem> family = [
+    // Around 50 family-related members with emojis
+    WordItem(text: 'Mother', subtitle: 'Mom', emoji: '👩'),
+    WordItem(text: 'Father', subtitle: 'Dad', emoji: '👨'),
+    WordItem(text: 'Brother', subtitle: 'Brother', emoji: '👦'),
+    WordItem(text: 'Sister', subtitle: 'Sister', emoji: '👧'),
+    WordItem(text: 'Grandmother', subtitle: 'Grandma', emoji: '👵'),
+    WordItem(text: 'Grandfather', subtitle: 'Grandpa', emoji: '👴'),
+    WordItem(text: 'Baby', subtitle: 'Little one', emoji: '👶'),
+    WordItem(text: 'Son', subtitle: 'Boy child', emoji: '👦'),
+    WordItem(text: 'Daughter', subtitle: 'Girl child', emoji: '👧'),
+    WordItem(text: 'Uncle', subtitle: 'Mother or father\'s brother', emoji: '👨'),
+    WordItem(text: 'Aunt', subtitle: 'Mother or father\'s sister', emoji: '👩'),
+    WordItem(text: 'Cousin', subtitle: 'Family friend', emoji: '🧒'),
+    WordItem(text: 'Nephew', subtitle: 'Brother or sister\'s son', emoji: '👦'),
+    WordItem(text: 'Niece', subtitle: 'Brother or sister\'s daughter', emoji: '👧'),
+    WordItem(text: 'Stepfather', subtitle: 'Bonus dad', emoji: '👨'),
+    WordItem(text: 'Stepmother', subtitle: 'Bonus mom', emoji: '👩'),
+    WordItem(text: 'Stepson', subtitle: 'Bonus son', emoji: '👦'),
+    WordItem(text: 'Stepdaughter', subtitle: 'Bonus daughter', emoji: '👧'),
+    WordItem(text: 'Father-in-law', subtitle: 'Partner\'s father', emoji: '👴'),
+    WordItem(text: 'Mother-in-law', subtitle: 'Partner\'s mother', emoji: '👵'),
+    WordItem(text: 'Brother-in-law', subtitle: 'Partner\'s brother', emoji: '👨'),
+    WordItem(text: 'Sister-in-law', subtitle: 'Partner\'s sister', emoji: '👩'),
+    WordItem(text: 'Great-grandmother', subtitle: 'Grandma\'s mom', emoji: '👵'),
+    WordItem(text: 'Great-grandfather', subtitle: 'Grandpa\'s dad', emoji: '👴'),
+    WordItem(text: 'Twin Brother', subtitle: 'Same age boy', emoji: '👬'),
+    WordItem(text: 'Twin Sister', subtitle: 'Same age girl', emoji: '👭'),
+    WordItem(text: 'Godfather', subtitle: 'Special family friend', emoji: '👨'),
+    WordItem(text: 'Godmother', subtitle: 'Special family friend', emoji: '👩'),
+    WordItem(text: 'Adopted Son', subtitle: 'Chosen child', emoji: '👦'),
+    WordItem(text: 'Adopted Daughter', subtitle: 'Chosen child', emoji: '👧'),
+    WordItem(text: 'Guardian', subtitle: 'Care taker', emoji: '🧑'),
+    WordItem(text: 'Family Friend', subtitle: 'Close like family', emoji: '🧑‍🤝‍🧑'),
+    WordItem(text: 'Big Brother', subtitle: 'Older brother', emoji: '👦'),
+    WordItem(text: 'Little Brother', subtitle: 'Younger brother', emoji: '👦'),
+    WordItem(text: 'Big Sister', subtitle: 'Older sister', emoji: '👧'),
+    WordItem(text: 'Little Sister', subtitle: 'Younger sister', emoji: '👧'),
+    WordItem(text: 'Pet Dog', subtitle: 'Family dog', emoji: '🐶'),
+    WordItem(text: 'Pet Cat', subtitle: 'Family cat', emoji: '🐱'),
+    WordItem(text: 'Grandson', subtitle: 'Child\'s son', emoji: '👦'),
+    WordItem(text: 'Granddaughter', subtitle: 'Child\'s daughter', emoji: '👧'),
+    // WordItem(text: 'Caring Parent', subtitle: 'Loving adult', emoji: '🧑'),
+    // WordItem(text: 'Happy Family', subtitle: 'Everyone together', emoji: '👨‍👩‍👧‍👦'),
+    WordItem(text: 'Family Home', subtitle: 'Where we live', emoji: '🏠'),
+    // WordItem(text: 'Family Meal', subtitle: 'Eat together', emoji: '🍽️'),
+    // WordItem(text: 'Family Trip', subtitle: 'Travel together', emoji: '✈️'),
+    // WordItem(text: 'Family Photo', subtitle: 'Smile together', emoji: '📸'),
+    WordItem(text: 'New Baby', subtitle: 'Welcome child', emoji: '🍼'),
+    // WordItem(text: 'Caring Grandparents', subtitle: 'Grandma and grandpa', emoji: '👵👴'),
+  ];
+
+  static const List<WordItem> greetings = [
+    // Around 50 greetings and polite words with emojis
+    WordItem(text: 'Hello', subtitle: 'Hi there', emoji: '👋'),
+    WordItem(text: 'Good Morning', subtitle: 'Morning wish', emoji: '🌅'),
+    WordItem(text: 'Good Afternoon', subtitle: 'Afternoon wish', emoji: '🌞'),
+    WordItem(text: 'Good Evening', subtitle: 'Evening wish', emoji: '🌆'),
+    WordItem(text: 'Good Night', subtitle: 'Night wish', emoji: '🌙'),
+    WordItem(text: 'Thank You', subtitle: 'Be thankful', emoji: '🙏'),
+    WordItem(text: 'Please', subtitle: 'Ask kindly', emoji: '😊'),
+    WordItem(text: 'Sorry', subtitle: 'Say sorry', emoji: '😔'),
+    WordItem(text: 'Excuse Me', subtitle: 'Get attention', emoji: '🙋'),
+    WordItem(text: 'You\'re Welcome', subtitle: 'Answer to thanks', emoji: '🤗'),
+    WordItem(text: 'Nice to Meet You', subtitle: 'First greeting', emoji: '🤝'),
+    WordItem(text: 'See You Soon', subtitle: 'Goodbye for now', emoji: '👋'),
+    WordItem(text: 'Take Care', subtitle: 'Be safe', emoji: '❤️'),
+    WordItem(text: 'Welcome', subtitle: 'Happy to see you', emoji: '🎉'),
+    WordItem(text: 'How Are You?', subtitle: 'Ask kindly', emoji: '🙂'),
+    WordItem(text: 'I\'m Fine', subtitle: 'Answer to how are you', emoji: '😄'),
+    WordItem(text: 'Good Job', subtitle: 'Nice work', emoji: '👏'),
+    WordItem(text: 'Well Done', subtitle: 'Great effort', emoji: '🌟'),
+    WordItem(text: 'Best Wishes', subtitle: 'Good luck', emoji: '🍀'),
+    WordItem(text: 'Happy Birthday', subtitle: 'Birthday wish', emoji: '🎂'),
+    WordItem(text: 'Happy Holidays', subtitle: 'Festival wish', emoji: '🎄'),
+    WordItem(text: 'Congratulations', subtitle: 'Celebrate success', emoji: '🏆'),
+    WordItem(text: 'Get Well Soon', subtitle: 'For sick person', emoji: '🤒'),
+    WordItem(text: 'Good Luck', subtitle: 'Before a test', emoji: '🍀'),
+    WordItem(text: 'May I Help You?', subtitle: 'Offer help', emoji: '🤝'),
+    WordItem(text: 'Thank You Very Much', subtitle: 'Extra thankful', emoji: '🙇'),
+    WordItem(text: 'Excuse Me Please', subtitle: 'Very polite', emoji: '🙋‍♂️'),
+    WordItem(text: 'I\'m Sorry', subtitle: 'Say sorry politely', emoji: '😢'),
+    WordItem(text: 'No Problem', subtitle: 'It\'s okay', emoji: '👌'),
+    WordItem(text: 'Pardon Me', subtitle: 'Ask to repeat', emoji: '🗣️'),
+    WordItem(text: 'Long Time No See', subtitle: 'After many days', emoji: '🤗'),
+    WordItem(text: 'Good to See You', subtitle: 'Happy meeting', emoji: '😊'),
+    WordItem(text: 'Have a Nice Day', subtitle: 'Day wish', emoji: '🌞'),
+    WordItem(text: 'Have a Great Time', subtitle: 'Enjoy!', emoji: '🎉'),
+    WordItem(text: 'Sweet Dreams', subtitle: 'Night wish', emoji: '😴'),
+    WordItem(text: 'Safe Journey', subtitle: 'Travel wish', emoji: '🚌'),
+    WordItem(text: 'Welcome Home', subtitle: 'Back to home', emoji: '🏠'),
+    WordItem(text: 'I Miss You', subtitle: 'Miss someone', emoji: '🥺'),
+    WordItem(text: 'I Love You', subtitle: 'Show love', emoji: '❤️'),
+    WordItem(text: 'Good to Have You', subtitle: 'Glad you came', emoji: '🤗'),
+    WordItem(text: 'Please Listen', subtitle: 'Be attentive', emoji: '👂'),
+    WordItem(text: 'Please Wait', subtitle: 'Ask to wait', emoji: '⏳'),
+    WordItem(text: 'Come In Please', subtitle: 'Enter kindly', emoji: '🚪'),
+    WordItem(text: 'Sit Down Please', subtitle: 'Offer a seat', emoji: '🪑'),
+    WordItem(text: 'Stand Up Please', subtitle: 'Ask to stand', emoji: '🧍'),
+    WordItem(text: 'Thank You Teacher', subtitle: 'Respect teacher', emoji: '👩‍🏫'),
+    WordItem(text: 'Good Morning Teacher', subtitle: 'School greeting', emoji: '🏫'),
+    WordItem(text: 'Good Bye', subtitle: 'Final bye', emoji: '👋'),
+    WordItem(text: 'Peace Be With You', subtitle: 'Kind blessing', emoji: '🕊️'),
+  ];
+}
+

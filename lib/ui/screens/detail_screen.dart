@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/alphabet_data.dart';
 import '../../utils/responsive.dart';
 import '../../utils/haptic_feedback.dart';
+import '../../utils/app_speech.dart';
 
 /// Detail screen showing letter information with animations
 class DetailScreen extends StatefulWidget {
@@ -163,6 +165,10 @@ class _DetailScreenState extends State<DetailScreen>
     _contentController.reset();
     _setupAnimations();
     _contentController.forward();
+
+    // After changing the letter, speak it with its example word.
+    final item = AlphabetData.getItem(newIndex);
+    AppSpeech.speak(context, '${item.letter}. ${item.word}');
   }
 
   @override
@@ -1460,7 +1466,7 @@ class _DetailScreenState extends State<DetailScreen>
         children: [
           Expanded(
             child: _buildNavButton(
-              label: 'Previous',
+              label: 'nav.previous'.tr(),
               icon: Icons.arrow_back_ios_new_rounded,
               onPressed: _currentIndex > 0
                   ? () => _changeLetter(_currentIndex - 1)
@@ -1470,7 +1476,7 @@ class _DetailScreenState extends State<DetailScreen>
           const SizedBox(width: 16),
           Expanded(
             child: _buildNavButton(
-              label: 'Next',
+              label: 'nav.next'.tr(),
               icon: Icons.arrow_forward_ios_rounded,
               onPressed: _currentIndex < AlphabetData.count - 1
                   ? () => _changeLetter(_currentIndex + 1)
