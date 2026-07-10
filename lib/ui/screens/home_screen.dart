@@ -1,17 +1,34 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
-import '../../utils/responsive.dart';
+import '../../data/numbers_data.dart';
+import '../../utils/app_speech.dart';
 import '../../utils/haptic_feedback.dart';
+import '../../utils/responsive.dart';
+import '../widgets/home_play_background.dart';
+import '../widgets/kid_language_sheet.dart';
+import '../widgets/kid_play_card.dart';
+import '../widgets/kid_promo_header.dart';
 import 'about_screen.dart';
 import 'alphabet_screen.dart';
-import 'numbers_screen.dart';
-import 'spelling_screen.dart';
-import 'shapes_colors_screen.dart';
+import 'body_parts_screen.dart';
+import 'emotions_screen.dart';
 import 'everyday_words_screen.dart';
+import 'family_screen.dart';
+import 'greetings_screen.dart';
+import 'numbers_screen.dart';
+import 'opposites_screen.dart';
+import 'rhymes_screen.dart';
+import 'shapes_colors_screen.dart';
+import 'spelling_screen.dart';
+import 'vehicles_screen.dart';
+import 'weather_seasons_screen.dart';
+import 'native_script_screen.dart';
+import 'math_logic_screen.dart';
 
-/// Home screen displaying all 26 letters in a grid
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,37 +36,75 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+class _HomeModule {
+  final String emoji;
+  final String imageAsset;
+  final Color color;
+  final String title;
+  final VoidCallback onTap;
+
+  const _HomeModule({
+    required this.emoji,
+    required this.imageAsset,
+    required this.color,
+    required this.title,
+    required this.onTap,
+  });
+}
+
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
+    with SingleTickerProviderStateMixin, RouteAware {
+  late AnimationController _fadeController;
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
+  bool _ttsWarmed = false;
+  PageRoute<dynamic>? _route;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 700),
       vsync: this,
-    );
-    _animationController.forward();
+    )..forward();
 
-    // Listen to scroll for app bar color change
     _scrollController.addListener(() {
-      final scrolled = _scrollController.offset > 20;
-      if (scrolled != _isScrolled) {
-        setState(() {
-          _isScrolled = scrolled;
-        });
-      }
+      final scrolled = _scrollController.offset > 16;
+      if (scrolled != _isScrolled) setState(() => _isScrolled = scrolled);
     });
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_ttsWarmed) {
+      _ttsWarmed = true;
+      AppSpeech.warmUp(context.locale);
+    }
+    final route = ModalRoute.of(context);
+    if (route is PageRoute<dynamic> && route != _route) {
+      if (_route != null) {
+        AppSpeech.routeObserver.unsubscribe(this);
+      }
+      _route = route;
+      AppSpeech.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
-    _animationController.dispose();
+    if (_route != null) {
+      AppSpeech.routeObserver.unsubscribe(this);
+    }
+    AppSpeech.stop();
+    _fadeController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPushNext() {
+    AppSpeech.interruptPlayback();
   }
 
   @override
@@ -59,470 +114,412 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(context),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.horizontalPadding,
-            vertical: responsive.verticalPadding,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAlphabetSection(context, responsive),
-              const SizedBox(height: 24),
-              _buildLearningShortcuts(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Build app bar with scroll-based color change
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    final appTitle = 'Kids Learning World';
-    final subtitle = 'exploreSubtitle'.tr();
-    return AppBar(
-      backgroundColor: _isScrolled
-          ? const Color(0xFFFFF3D0).withValues(alpha: 0.95)
-          : Colors.transparent,
-      elevation: _isScrolled ? 4 : 0,
-      shadowColor: _isScrolled ? Colors.orange.withValues(alpha: 0.2) : null,
-      toolbarHeight: 72,
-      title: Row(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-            child: Image.asset(
-              'assets/images/app_logo.png',
-              height: 36,
-              errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.menu_book_rounded,
-                  color: AppColors.primary,
-                  size: 36,
-                );
-              },
+      body: HomePlayBackground(
+        child: SafeArea(
+          child: FadeTransition(
+            opacity: CurvedAnimation(
+              parent: _fadeController,
+              curve: Curves.easeOut,
             ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  appTitle,
-                  style: AppTextStyles.heading2.copyWith(
-                    color: AppColors.primary,
-                    fontSize: 20,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 11,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        _buildLanguageButton(context),
-        IconButton(
-          icon: const Icon(Icons.info_outline, color: AppColors.primary),
-          onPressed: () {
-            AppHapticFeedback.light();
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const AboutScreen(),
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              padding: EdgeInsets.fromLTRB(
+                responsive.horizontalPadding,
+                10,
+                responsive.horizontalPadding,
+                responsive.verticalPadding + 8,
               ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  /// Language selector button in the home app bar
-  Widget _buildLanguageButton(BuildContext context) {
-    return IconButton(
-      tooltip: 'Language',
-      icon: const Icon(
-        Icons.language_rounded,
-        color: AppColors.primary,
-      ),
-      onPressed: () => _showLanguageSheet(context),
-    );
-  }
-
-  void _showLanguageSheet(BuildContext context) {
-    final currentCode = context.locale.languageCode;
-
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      backgroundColor: Colors.white,
-      builder: (context) {
-        return SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'languageSheet.title'.tr(),
-                    style: AppTextStyles.heading3,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'languageSheet.subtitle'.tr(),
-                    style: AppTextStyles.body.copyWith(
-                      fontSize: 14,
-                    ),
-                  ),
+                  _buildPromoMarquee(context),
                   const SizedBox(height: 16),
-                  ...context.supportedLocales.map((locale) {
-                    final code = locale.languageCode;
-                    final isSelected = code == currentCode;
-                    return ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 0),
-                      leading: Icon(
-                        isSelected
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_off,
-                        color: isSelected ? AppColors.primary : Colors.grey,
-                      ),
-                      title: Text(
-                        _languageName(code),
-                        style: AppTextStyles.bodyBold,
-                      ),
-                      onTap: () {
-                        context.setLocale(Locale(code));
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  }),
+                  _buildPlayGrid(context),
                 ],
               ),
             ),
           ),
-        );
-      },
-    );
-  }
-
-  /// Alphabet section on home
-  Widget _buildAlphabetSection(BuildContext context, Responsive responsive) {
-    final title = 'homeTitle'.tr();
-    final subtitle = 'homeSubtitle'.tr();
-    return FadeTransition(
-      opacity: _animationController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.heading1,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: AppTextStyles.body,
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  /// Group of shortcut cards for extra learning sections, shown in a grid.
-  Widget _buildLearningShortcuts(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final topInset = MediaQuery.of(context).padding.top;
+    const barHeight = 56.0;
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(topInset + barHeight),
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+        ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.primary.withValues(alpha: 0.18),
+                width: 1.5,
+              ),
+            ),
+            boxShadow: _isScrolled
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(top: topInset),
+            child: SizedBox(
+              height: barHeight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Row(
+                  children: [
+                    const _HomeLogoBadge(),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ShaderMask(
+                        blendMode: BlendMode.srcIn,
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color(0xFF2BAFA6),
+                            Color(0xFF5C6BC0),
+                            AppColors.secondary,
+                          ],
+                        ).createShader(bounds),
+                        child: Text(
+                          'Kids Learning World',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.heading2.copyWith(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    _HomeHeaderAction(
+                      tooltip: 'Language',
+                      icon: Icons.language_rounded,
+                      color: AppColors.primary,
+                      onPressed: () => showKidLanguageSheet(context),
+                    ),
+                    const SizedBox(width: 6),
+                    _HomeHeaderAction(
+                      tooltip: 'About',
+                      icon: Icons.info_outline_rounded,
+                      color: AppColors.secondary,
+                      onPressed: () {
+                        AppHapticFeedback.light();
+                        AppSpeech.stop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const AboutScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromoMarquee(BuildContext context) {
+    return KidPromoHeader(
+      marqueeText: 'explore.marquee'.tr(),
+      onSpeak: () => _speakPromo(context),
+    );
+  }
+
+  void _speakPromo(BuildContext context) {
+    AppHapticFeedback.light();
+    final text = 'explore.marqueeSpeak'.tr();
+    AppSpeech.speak(context, text);
+  }
+
+  Widget _buildPlayGrid(BuildContext context) {
     final responsive = context.responsive;
-
-    final items = [
-      (
-        icon: Icons.sort_by_alpha_rounded,
-        color: AppColors.primary,
-        title: 'homeTitle'.tr(),
-        subtitle: 'homeSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AlphabetScreen(),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.filter_1_rounded,
-        color: Colors.orange,
-        title: 'shortcuts.numbersTitle'.tr(),
-        subtitle: 'shortcuts.numbersSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const NumbersScreen(),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.spellcheck_rounded,
-        color: AppColors.secondary,
-        title: 'shortcuts.spellingTitle'.tr(),
-        subtitle: 'shortcuts.spellingSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const SpellingScreen(),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.category_rounded,
-        color: AppColors.getLetterColor(2),
-        title: 'shortcuts.shapesColorsTitle'.tr(),
-        subtitle: 'shortcuts.shapesColorsSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const ShapesColorsScreen(),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.calendar_today_rounded,
-        color: AppColors.getLetterColor(5),
-        title: 'shortcuts.daysTitle'.tr(),
-        subtitle: 'shortcuts.daysSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const EverydayWordsScreen(
-                initialTab: 'days',
-                showTabs: false,
-              ),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.date_range_rounded,
-        color: AppColors.getLetterColor(7),
-        title: 'shortcuts.monthsTitle'.tr(),
-        subtitle: 'shortcuts.monthsSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const EverydayWordsScreen(
-                initialTab: 'months',
-                showTabs: false,
-              ),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.family_restroom_rounded,
-        color: AppColors.getLetterColor(9),
-        title: 'shortcuts.familyTitle'.tr(),
-        subtitle: 'shortcuts.familySubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const EverydayWordsScreen(
-                initialTab: 'family',
-                showTabs: false,
-              ),
-            ),
-          );
-        }
-      ),
-      (
-        icon: Icons.emoji_people_rounded,
-        color: AppColors.getLetterColor(11),
-        title: 'shortcuts.greetingsTitle'.tr(),
-        subtitle: 'shortcuts.greetingsSubtitle'.tr(),
-        onTap: () {
-          AppHapticFeedback.medium();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const EverydayWordsScreen(
-                initialTab: 'greetings',
-                showTabs: false,
-              ),
-            ),
-          );
-        }
-      ),
-    ];
-
-    final crossAxisCount =
-        responsive.gridCrossAxisCount.clamp(2, 3); // 2–3 big cards per row
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isWide = screenWidth >= 600;
+    final modules = _modules(context);
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: responsive.gridSpacing,
-        mainAxisSpacing: responsive.gridSpacing,
-        // On phones, make cards noticeably taller so text fits without scaling.
-        childAspectRatio: isWide ? 4 / 3 : 0.6,
+        crossAxisCount: responsive.homePlayCrossAxisCount,
+        crossAxisSpacing: responsive.gridSpacing + 6,
+        mainAxisSpacing: responsive.gridSpacing + 6,
+        childAspectRatio: responsive.homePlayAspectRatio,
       ),
-      itemCount: items.length,
+      itemCount: modules.length,
       itemBuilder: (context, index) {
-        final item = items[index];
-        return _ShortcutCard(
-          icon: item.icon,
-          iconColor: item.color,
-          title: item.title,
-          subtitle: item.subtitle,
-          onTap: item.onTap,
+        final m = modules[index];
+        return KidPlayCard(
+          emoji: m.emoji,
+          imageAsset: m.imageAsset,
+          title: m.title,
+          color: m.color,
+          onTap: m.onTap,
         );
       },
     );
   }
 
-  String _languageName(String code) {
-    switch (code) {
-      case 'hi':
-        return 'हिंदी (Hindi)';
-      case 'mr':
-        return 'मराठी (Marathi)';
-      case 'pa':
-        return 'ਪੰਜਾਬੀ (Punjabi)';
-      case 'ta':
-        return 'தமிழ் (Tamil)';
-      case 'gu':
-        return 'ગુજરાતી (Gujarati)';
-      case 'en':
+  List<_HomeModule> _modules(BuildContext context) {
+    final glyphs = NumbersData.glyphsKey.tr();
+    return [
+      _HomeModule(
+        emoji: '🔤',
+        imageAsset: _moduleImage('alphabet'),
+        color: AppColors.primary,
+        title: 'home.title'.tr(),
+        onTap: () => _open(context, const AlphabetScreen()),
+      ),
+      _HomeModule(
+        emoji: 'ક',
+        imageAsset: _moduleImage('native_script'),
+        color: AppColors.getLetterColor(1),
+        title: 'shortcuts.nativeScript.title'.tr(),
+        onTap: () => _open(context, const NativeScriptScreen()),
+      ),
+      _HomeModule(
+        emoji: '🔢',
+        imageAsset: _moduleImage('numbers'),
+        color: Colors.orange,
+        title: 'shortcuts.numbers.title'.tr(
+          namedArgs: {
+            'range': NumbersData.formatDigitRange(1, 100, glyphs),
+          },
+        ),
+        onTap: () => _open(context, const NumbersScreen()),
+      ),
+      _HomeModule(
+        emoji: '🧮',
+        imageAsset: _moduleImage('math_logic'),
+        color: AppColors.getLetterColor(12),
+        title: 'shortcuts.mathLogic.title'.tr(),
+        onTap: () => _open(context, const MathLogicScreen()),
+      ),
+      _HomeModule(
+        emoji: '📅',
+        imageAsset: _moduleImage('days'),
+        color: AppColors.getLetterColor(5),
+        title: 'shortcuts.days.title'.tr(),
+        onTap: () => _open(
+          context,
+          const EverydayWordsScreen(initialTab: 'days', showTabs: false),
+        ),
+      ),
+      _HomeModule(
+        emoji: '🗓️',
+        imageAsset: _moduleImage('months'),
+        color: AppColors.getLetterColor(7),
+        title: 'shortcuts.months.title'.tr(),
+        onTap: () => _open(
+          context,
+          const EverydayWordsScreen(initialTab: 'months', showTabs: false),
+        ),
+      ),
+      _HomeModule(
+        emoji: '🎨',
+        imageAsset: _moduleImage('shapes_colors'),
+        color: AppColors.getLetterColor(2),
+        title: 'shortcuts.shapesColors.title'.tr(),
+        onTap: () => _open(context, const ShapesColorsScreen()),
+      ),
+      _HomeModule(
+        emoji: '🧒',
+        imageAsset: _moduleImage('body_parts'),
+        color: AppColors.getLetterColor(3),
+        title: 'shortcuts.bodyParts.title'.tr(),
+        onTap: () => _open(context, const BodyPartsScreen()),
+      ),
+      _HomeModule(
+        emoji: '🎵',
+        imageAsset: _moduleImage('rhymes'),
+        color: AppColors.accent,
+        title: 'shortcuts.rhymes.title'.tr(),
+        onTap: () => _open(context, const RhymesScreen()),
+      ),
+      _HomeModule(
+        emoji: '✏️',
+        imageAsset: _moduleImage('spelling'),
+        color: AppColors.secondary,
+        title: 'shortcuts.spelling.title'.tr(),
+        onTap: () => _open(context, const SpellingScreen()),
+      ),
+      _HomeModule(
+        emoji: '☀️',
+        imageAsset: _moduleImage('weather'),
+        color: AppColors.getLetterColor(8),
+        title: 'shortcuts.weather.title'.tr(),
+        onTap: () => _open(context, const WeatherSeasonsScreen()),
+      ),
+      _HomeModule(
+        emoji: '👋',
+        imageAsset: _moduleImage('greetings'),
+        color: AppColors.getLetterColor(11),
+        title: 'shortcuts.greetings.title'.tr(),
+        onTap: () => _open(context, const GreetingsScreen()),
+      ),
+      _HomeModule(
+        emoji: '👨‍👩‍👧',
+        imageAsset: _moduleImage('family'),
+        color: AppColors.getLetterColor(9),
+        title: 'shortcuts.family.title'.tr(),
+        onTap: () => _open(context, const FamilyScreen()),
+      ),
+      _HomeModule(
+        emoji: '😊',
+        imageAsset: _moduleImage('emotions'),
+        color: AppColors.getLetterColor(4),
+        title: 'shortcuts.emotions.title'.tr(),
+        onTap: () => _open(context, const EmotionsScreen()),
+      ),
+      _HomeModule(
+        emoji: '↔️',
+        imageAsset: _moduleImage('opposites'),
+        color: AppColors.getLetterColor(6),
+        title: 'shortcuts.opposites.title'.tr(),
+        onTap: () => _open(context, const OppositesScreen()),
+      ),
+      _HomeModule(
+        emoji: '🚗',
+        imageAsset: _moduleImage('vehicles'),
+        color: AppColors.getLetterColor(10),
+        title: 'shortcuts.vehicles.title'.tr(),
+        onTap: () => _open(context, const VehiclesScreen()),
+      ),
+    ];
+  }
+
+  String _moduleImage(String key) {
+    switch (key) {
+      case 'alphabet':
+        return 'assets/images/modules/alphabet.png';
+      case 'numbers':
+        return 'assets/images/modules/number.png';
+      case 'math_logic':
+        return 'assets/images/modules/math_logic.png';
+      case 'native_script':
+        return 'assets/images/modules/gujrati_alphabet.png';
+      case 'days':
+        return 'assets/images/modules/week.png';
+      case 'months':
+        return 'assets/images/modules/month.png';
+      case 'shapes_colors':
+        return 'assets/images/modules/shape.png';
+      case 'body_parts':
+        return 'assets/images/modules/body.png';
+      case 'rhymes':
+        return 'assets/images/modules/rhymes.png';
+      case 'spelling':
+        return 'assets/images/modules/spelling.png';
+      case 'weather':
+        return 'assets/images/modules/weather.png';
+      case 'greetings':
+        return 'assets/images/modules/greeting.png';
+      case 'family':
+        return 'assets/images/modules/family.png';
+      case 'emotions':
+        return 'assets/images/modules/feeling.png';
+      case 'opposites':
+        return 'assets/images/modules/opposites.png';
+      case 'vehicles':
+        return 'assets/images/modules/vehicle.png';
       default:
-        return 'English';
+        return 'assets/images/modules/feeling.png';
     }
   }
 
+  void _open(BuildContext context, Widget screen) {
+    AppHapticFeedback.medium();
+    AppSpeech.interruptPlayback();
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
 }
 
-/// Reusable small shortcut card used in the home header
-class _ShortcutCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ShortcutCard({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
+class _HomeLogoBadge extends StatelessWidget {
+  const _HomeLogoBadge();
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              iconColor.withValues(alpha: 0.15),
-              Colors.white,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: iconColor.withValues(alpha: 0.35),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: iconColor.withValues(alpha: 0.18),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.35),
+          width: 1.5,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 22,
-              ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.all(3),
+          child: Image.asset(
+            'assets/images/app_logo.png',
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => const Center(
+              child: Text('📚', style: TextStyle(fontSize: 20)),
             ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyBold.copyWith(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.caption.copyWith(
-                fontSize: 11,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeHeaderAction extends StatelessWidget {
+  const _HomeHeaderAction({
+    required this.tooltip,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: color.withValues(alpha: 0.12),
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 38,
+            height: 38,
+            child: Icon(icon, color: color, size: 21),
+          ),
         ),
       ),
     );

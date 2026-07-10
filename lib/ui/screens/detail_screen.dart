@@ -7,8 +7,8 @@ import '../../data/alphabet_data.dart';
 import '../../utils/responsive.dart';
 import '../../utils/haptic_feedback.dart';
 import '../../utils/app_speech.dart';
+import '../widgets/kid_alphabet_style_detail.dart';
 
-/// Detail screen showing letter information with animations
 class DetailScreen extends StatefulWidget {
   final int initialIndex;
 
@@ -21,7 +21,6 @@ class DetailScreen extends StatefulWidget {
   State<DetailScreen> createState() => _DetailScreenState();
 }
 
-/// Random animation types
 enum AnimationType {
   slideFromBottom,
   slideFromTop,
@@ -42,33 +41,32 @@ class _DetailScreenState extends State<DetailScreen>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotateAnimation;
-
-  // Current animation type
   AnimationType _currentAnimationType = AnimationType.slideFromBottom;
   final math.Random _random = math.Random();
-
-  // Scroll controller for app bar color change
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
+
+  String _description(AlphabetItem item) => item.descriptionKey.tr();
+
+  String _funFact(AlphabetItem item) => item.funFactKey.tr();
+
+  String _ordinal(int number) => 'alphabet.ordinals.$number'.tr();
+
+  String _encouragementMessage() =>
+      'alphabet.encouragement.${_currentIndex % 6}'.tr();
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-
-    // Content animation controller
     _contentController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-
-    // Scale animation controller
     _scaleController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-
-    // Listen to scroll for app bar color change
     _scrollController.addListener(() {
       final scrolled = _scrollController.offset > 30;
       if (scrolled != _isScrolled) {
@@ -82,13 +80,11 @@ class _DetailScreenState extends State<DetailScreen>
     _contentController.forward();
   }
 
-  /// Setup all animations based on current type
   void _setupAnimations() {
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _contentController, curve: Curves.easeIn),
     );
 
-    // Slide animation - changes based on type
     Offset slideBegin;
     switch (_currentAnimationType) {
       case AnimationType.slideFromBottom:
@@ -134,25 +130,24 @@ class _DetailScreenState extends State<DetailScreen>
 
   @override
   void dispose() {
+    AppSpeech.stop();
     _contentController.dispose();
     _scaleController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  /// Change to next/previous letter with RANDOM animation
+  void _leaveScreen() {
+    AppSpeech.stop();
+    Navigator.of(context).pop();
+  }
+
   void _changeLetter(int newIndex) {
     if (newIndex < 0 || newIndex >= AlphabetData.count) return;
-
-    // Provide haptic feedback for learning progress
-    AppHapticFeedback.success(); // Success feedback for learning new letters
-
-    // Scroll to top immediately
+    AppHapticFeedback.success();
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(0);
     }
-
-    // Pick a random animation type
     final animationTypes = AnimationType.values;
     _currentAnimationType =
         animationTypes[_random.nextInt(animationTypes.length)];
@@ -161,12 +156,10 @@ class _DetailScreenState extends State<DetailScreen>
       _currentIndex = newIndex;
     });
 
-    // Reset and setup new animations
     _contentController.reset();
     _setupAnimations();
     _contentController.forward();
 
-    // After changing the letter, speak it with its example word.
     final item = AlphabetData.getItem(newIndex);
     AppSpeech.speak(context, '${item.letter}. ${item.word}');
   }
@@ -176,16 +169,19 @@ class _DetailScreenState extends State<DetailScreen>
     final responsive = context.responsive;
     final item = AlphabetData.getItem(_currentIndex);
 
-    return Scaffold(
-      backgroundColor:
-          const Color(0xFFFFF8E1), // Warm cream yellow matching images
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        AppSpeech.stop();
+      },
+      child: Scaffold(
+      backgroundColor: const Color(0xFFFFF8E1),
       appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                controller: _scrollController, // Attach scroll controller
+                controller: _scrollController,
                 padding: EdgeInsets.symmetric(
                   horizontal: responsive.horizontalPadding,
                   vertical: 8,
@@ -231,10 +227,10 @@ class _DetailScreenState extends State<DetailScreen>
           ],
         ),
       ),
+    ),
     );
   }
 
-  /// Build animated content with random animation type
   Widget _buildAnimatedContent(Widget child) {
     switch (_currentAnimationType) {
       case AnimationType.slideFromBottom:
@@ -287,12 +283,11 @@ class _DetailScreenState extends State<DetailScreen>
     }
   }
 
-  /// Build app bar with scroll-based color change
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: _isScrolled
           ? AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.9)
-          : const Color(0xFFFFF3D0),
+          : AppColors.appBarTint,
       elevation: _isScrolled ? 6 : 2,
       shadowColor: _isScrolled
           ? AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.3)
@@ -304,10 +299,12 @@ class _DetailScreenState extends State<DetailScreen>
               ? Colors.white
               : AppColors.getLetterColor(_currentIndex),
         ),
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: _leaveScreen,
       ),
       title: Text(
-        'Letter ${AlphabetData.getItem(_currentIndex).letter}',
+        'alphabet.appBarTitle'.tr(namedArgs: {
+          'letter': AlphabetData.getItem(_currentIndex).letter,
+        }),
         style: AppTextStyles.heading3.copyWith(
           color: _isScrolled
               ? Colors.white
@@ -318,7 +315,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build progress indicator showing letter position
   Widget _buildProgressIndicator() {
     final progress = (_currentIndex + 1) / AlphabetData.count;
     final letterColor = AppColors.getLetterColor(_currentIndex);
@@ -361,7 +357,10 @@ class _DetailScreenState extends State<DetailScreen>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Letter ${_currentIndex + 1} of 26',
+                    'alphabet.progress'.tr(namedArgs: {
+                      'current': '${_currentIndex + 1}',
+                      'total': '${AlphabetData.count}',
+                    }),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -403,60 +402,17 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build encouragement badge
   Widget _buildEncouragementBadge(AlphabetItem item) {
-    final messages = [
-      '🌟 Great Job Learning!',
-      '🎯 You\'re Amazing!',
-      '⭐ Keep Going!',
-      '🎉 Fantastic Work!',
-      '💪 You\'re Doing Great!',
-      '🚀 Super Star!',
-    ];
-    final message = messages[_currentIndex % messages.length];
+    final message = _encouragementMessage();
     final letterColor = AppColors.getLetterColor(_currentIndex);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            letterColor.withValues(alpha: 0.8),
-            letterColor,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: letterColor.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.star_rounded, color: Colors.white, size: 24),
-          const SizedBox(width: 8),
-          Text(
-            message,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(Icons.star_rounded, color: Colors.white, size: 24),
-        ],
-      ),
+    return KidAlphabetStyleDetail.encouragement(
+      accentColor: letterColor,
+      message: message,
+      onSpeak: () => AppSpeech.speak(context, message),
     );
   }
 
-  /// Build decorative divider
   Widget _buildDivider() {
     final letterColor = AppColors.getLetterColor(_currentIndex);
 
@@ -513,7 +469,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build improved celebration message with multiple elements
   Widget _buildCelebrationMessage() {
     final letterColor = AppColors.getLetterColor(_currentIndex);
     final isVowel = 'AEIOU'
@@ -551,7 +506,6 @@ class _DetailScreenState extends State<DetailScreen>
       ),
       child: Stack(
         children: [
-          // Decorative stars in corners
           Positioned(
             top: 15,
             left: 15,
@@ -582,7 +536,6 @@ class _DetailScreenState extends State<DetailScreen>
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                // Trophy with letter badge
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -636,12 +589,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                // Celebration text
                 Text(
-                  '🎊 Amazing Work! 🎊',
+                  'alphabet.celebration.amazingWork'.tr(),
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -650,10 +600,7 @@ class _DetailScreenState extends State<DetailScreen>
                   ),
                   textAlign: TextAlign.center,
                 ),
-
                 const SizedBox(height: 12),
-
-                // Achievement message
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -666,7 +613,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                   ),
                   child: Text(
-                    'You mastered letter $currentLetter!',
+                    'alphabet.celebration.mastered'.tr(namedArgs: {
+                      'letter': currentLetter,
+                    }),
                     style: TextStyle(
                       fontSize: 18,
                       color: letterColor,
@@ -675,32 +624,28 @@ class _DetailScreenState extends State<DetailScreen>
                     textAlign: TextAlign.center,
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-                // Special badge for vowels or achievement
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
                   children: [
                     _buildAchievementChip(
                       icon: isVowel ? Icons.favorite : Icons.star,
-                      label: isVowel ? 'Vowel Master!' : 'Letter Pro!',
+                      label: isVowel
+                          ? 'alphabet.achievements.vowelMaster'.tr()
+                          : 'alphabet.achievements.letterPro'.tr(),
                       color: letterColor,
                     ),
-                    if (_currentIndex + 1 == 26) ...[
-                      const SizedBox(width: 8),
+                    if (_currentIndex + 1 == 26)
                       _buildAchievementChip(
                         icon: Icons.celebration,
-                        label: 'Complete!',
+                        label: 'alphabet.achievements.complete'.tr(),
                         color: Colors.purple,
                       ),
-                    ],
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                // Divider with hearts
                 Row(
                   children: [
                     Expanded(
@@ -720,10 +665,7 @@ class _DetailScreenState extends State<DetailScreen>
                             thickness: 2)),
                   ],
                 ),
-
                 const SizedBox(height: 20),
-
-                // Next letter preview or completion message
                 if (hasNext)
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -750,7 +692,7 @@ class _DetailScreenState extends State<DetailScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Next Adventure:',
+                              'alphabet.celebration.nextAdventure'.tr(),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: letterColor.withValues(alpha: 0.7),
@@ -758,7 +700,9 @@ class _DetailScreenState extends State<DetailScreen>
                               ),
                             ),
                             Text(
-                              'Letter $nextLetter',
+                              'alphabet.celebration.nextLetter'.tr(namedArgs: {
+                                'letter': nextLetter,
+                              }),
                               style: TextStyle(
                                 fontSize: 18,
                                 color: letterColor,
@@ -804,9 +748,9 @@ class _DetailScreenState extends State<DetailScreen>
                     ),
                     child: Column(
                       children: [
-                        const Text(
-                          '🏆 CONGRATULATIONS! 🏆',
-                          style: TextStyle(
+                        Text(
+                          'alphabet.celebration.congratulationsTitle'.tr(),
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.purple,
@@ -815,7 +759,7 @@ class _DetailScreenState extends State<DetailScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'You completed the entire alphabet!',
+                          'alphabet.celebration.completedAlphabet'.tr(),
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.purple.withValues(alpha: 0.8),
@@ -834,7 +778,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build achievement chip
   Widget _buildAchievementChip({
     required IconData icon,
     required String label,
@@ -876,7 +819,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build large letter display
   Widget _buildLetterDisplay(AlphabetItem item) {
     return Hero(
       tag: 'letter_${item.letter}',
@@ -922,7 +864,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build letter image - blends with yellow background + corner badge
   Widget _buildImage(AlphabetItem item) {
     return Container(
       margin: EdgeInsets.zero,
@@ -957,7 +898,7 @@ class _DetailScreenState extends State<DetailScreen>
             // Main Image
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF9E6), // Matches image background
+                color: const Color(0xFFFFF9E6),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Image.asset(
@@ -974,7 +915,7 @@ class _DetailScreenState extends State<DetailScreen>
                         end: Alignment.bottomRight,
                         colors: [
                           const Color(0xFFFFF9E6),
-                          const Color(0xFFFFF3D0),
+                          AppColors.appBarTint,
                         ],
                       ),
                     ),
@@ -989,7 +930,7 @@ class _DetailScreenState extends State<DetailScreen>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Image coming soon!',
+                            'alphabet.imageComingSoon'.tr(),
                             style: TextStyle(
                               color: Colors.orange.withValues(alpha: 0.7),
                               fontSize: 16,
@@ -1003,8 +944,6 @@ class _DetailScreenState extends State<DetailScreen>
                 },
               ),
             ),
-
-            // Bottom-right decorative badge (covers Gemini logo)
             Positioned(
               bottom: 8,
               right: 8,
@@ -1016,7 +955,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build corner badge to cover Gemini logo with something educational
   Widget _buildCornerBadge(AlphabetItem item) {
     final letterNumber = _currentIndex + 1;
     final isVowel = 'AEIOU'.contains(item.letter.toUpperCase());
@@ -1070,7 +1008,7 @@ class _DetailScreenState extends State<DetailScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                _getOrdinal(letterNumber),
+                _ordinal(letterNumber),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 11,
@@ -1079,7 +1017,7 @@ class _DetailScreenState extends State<DetailScreen>
                 ),
               ),
               Text(
-                isVowel ? 'Vowel' : 'Letter',
+                isVowel ? 'alphabet.vowel'.tr() : 'alphabet.letterType'.tr(),
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 9,
@@ -1094,149 +1032,46 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build word text
   Widget _buildWord(AlphabetItem item) {
-    return Text(
-      item.word,
-      style: AppTextStyles.word.copyWith(
-        color: AppColors.getLetterColor(_currentIndex),
-        fontSize: 34,
-        fontWeight: FontWeight.bold,
-      ),
-      textAlign: TextAlign.center,
+    final color = AppColors.getLetterColor(_currentIndex);
+    return KidAlphabetStyleDetail.titleText(
+      text: item.word,
+      accentColor: color,
     );
   }
 
-  /// Build description text - warm theme
   Widget _buildDescription(AlphabetItem item) {
-    return Container(
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white,
-            const Color(0xFFFFFBF0),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.orange.withValues(alpha: 0.2),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withValues(alpha: 0.1),
-            blurRadius: 15,
-            spreadRadius: 0,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.menu_book_rounded,
-                color: AppColors.getLetterColor(_currentIndex),
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'About',
-                style: AppTextStyles.bodyBold.copyWith(
-                  fontSize: 18,
-                  color: AppColors.getLetterColor(_currentIndex),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            item.description,
-            style: AppTextStyles.body.copyWith(
-              fontSize: 16,
-              height: 1.6,
-              color: const Color(0xFF424242),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+    final color = AppColors.getLetterColor(_currentIndex);
+    final title = 'alphabet.about'.tr();
+    final body = _description(item);
+    return KidAlphabetStyleDetail.aboutCard(
+      accentColor: color,
+      title: title,
+      body: body,
+      onSpeak: () => AppSpeech.speak(
+        context,
+        KidAlphabetStyleDetail.sectionSpeakText(title, body),
       ),
     );
   }
 
-  /// Build fun fact section - warm yellow theme
   Widget _buildFunFact(AlphabetItem item) {
-    return Container(
-      margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFFFFF9E6),
-            const Color(0xFFFFF3D0),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.orange.withValues(alpha: 0.25),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withValues(alpha: 0.1),
-            blurRadius: 15,
-            spreadRadius: 0,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.emoji_objects_rounded,
-                color: AppColors.getLetterColor(_currentIndex),
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'Fun Fact',
-                style: AppTextStyles.bodyBold.copyWith(
-                  fontSize: 18,
-                  color: AppColors.getLetterColor(_currentIndex),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            item.funFact,
-            style: AppTextStyles.body.copyWith(
-              fontSize: 16,
-              height: 1.6,
-              color: const Color(0xFF424242),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+    final color = AppColors.getLetterColor(_currentIndex);
+    final title = 'alphabet.funFactTitle'.tr();
+    final body = _funFact(item);
+    return KidAlphabetStyleDetail.funFactCard(
+      accentColor: color,
+      title: title,
+      body: body,
+      onSpeak: () => AppSpeech.speak(
+        context,
+        KidAlphabetStyleDetail.sectionSpeakText(title, body),
       ),
     );
   }
 
-  /// Build letter information with more examples - warm theme
   Widget _buildLetterInfo(AlphabetItem item) {
-    // Get more example words for the letter
-    final moreWords = _getMoreWords(item.letter);
+    final moreWords = item.moreWords;
     final letterNumber = _currentIndex + 1;
     final isVowel = 'AEIOU'.contains(item.letter.toUpperCase());
 
@@ -1279,7 +1114,7 @@ class _DetailScreenState extends State<DetailScreen>
               ),
               const SizedBox(width: 10),
               Text(
-                'More About ${item.letter}',
+                'alphabet.moreAbout'.tr(namedArgs: {'letter': item.letter}),
                 style: AppTextStyles.bodyBold.copyWith(
                   fontSize: 18,
                   color: AppColors.getLetterColor(_currentIndex),
@@ -1290,16 +1125,19 @@ class _DetailScreenState extends State<DetailScreen>
           const SizedBox(height: 16),
 
           // Letter position and type
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
             children: [
               _buildInfoChip(
-                '${_getOrdinal(letterNumber)} Letter',
+                'alphabet.nthLetter'.tr(namedArgs: {
+                  'ordinal': _ordinal(letterNumber),
+                }),
                 Icons.format_list_numbered_rounded,
               ),
-              const SizedBox(width: 12),
               _buildInfoChip(
-                isVowel ? 'Vowel' : 'Consonant',
+                isVowel ? 'alphabet.vowel'.tr() : 'alphabet.consonant'.tr(),
                 isVowel ? Icons.album_rounded : Icons.abc_rounded,
               ),
             ],
@@ -1311,7 +1149,7 @@ class _DetailScreenState extends State<DetailScreen>
           Column(
             children: [
               Text(
-                'More words with ${item.letter}:',
+                'alphabet.moreWordsWith'.tr(namedArgs: {'letter': item.letter}),
                 style: AppTextStyles.body.copyWith(
                   fontSize: 15,
                   color: const Color(0xFF616161),
@@ -1332,9 +1170,9 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build info chip
   Widget _buildInfoChip(String label, IconData icon) {
     return Container(
+      constraints: const BoxConstraints(maxWidth: 200),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -1361,84 +1199,55 @@ class _DetailScreenState extends State<DetailScreen>
               fontWeight: FontWeight.w600,
               color: AppColors.getLetterColor(_currentIndex),
             ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  /// Build word chip
   Widget _buildWordChip(String word) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.1),
+    final color = AppColors.getLetterColor(_currentIndex);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          AppHapticFeedback.light();
+          AppSpeech.speak(context, word);
+        },
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.getLetterColor(_currentIndex).withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Text(
-        word,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: AppColors.getLetterColor(_currentIndex),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withValues(alpha: 0.3),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                word,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 6),
+              KidAlphabetStyleDetail.speakHintIcon(color),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Get ordinal number (1st, 2nd, 3rd, etc.)
-  String _getOrdinal(int number) {
-    if (number >= 11 && number <= 13) return '${number}th';
-    switch (number % 10) {
-      case 1:
-        return '${number}st';
-      case 2:
-        return '${number}nd';
-      case 3:
-        return '${number}rd';
-      default:
-        return '${number}th';
-    }
-  }
-
-  /// Get more example words for the letter
-  List<String> _getMoreWords(String letter) {
-    final words = {
-      'A': ['Ant', 'Airplane', 'Alligator'],
-      'B': ['Bear', 'Banana', 'Butterfly'],
-      'C': ['Cake', 'Carrot', 'Castle'],
-      'D': ['Dog', 'Duck', 'Dragon'],
-      'E': ['Egg', 'Eagle', 'Envelope'],
-      'F': ['Frog', 'Flower', 'Fire'],
-      'G': ['Grapes', 'Guitar', 'Ghost'],
-      'H': ['Hat', 'Horse', 'Helicopter'],
-      'I': ['Igloo', 'Insect', 'Island'],
-      'J': ['Juice', 'Jellyfish', 'Jacket'],
-      'K': ['King', 'Kangaroo', 'Key'],
-      'L': ['Lemon', 'Ladybug', 'Lamp'],
-      'M': ['Mouse', 'Moon', 'Mountain'],
-      'N': ['Nose', 'Noodles', 'Notebook'],
-      'O': ['Octopus', 'Owl', 'Ocean'],
-      'P': ['Penguin', 'Pizza', 'Pencil'],
-      'Q': ['Quilt', 'Question', 'Quail'],
-      'R': ['Rainbow', 'Robot', 'River'],
-      'S': ['Star', 'Snake', 'Sandwich'],
-      'T': ['Tiger', 'Turtle', 'Telephone'],
-      'U': ['Unicorn', 'Union', 'Universe'],
-      'V': ['Vase', 'Vegetable', 'Volcano'],
-      'W': ['Wolf', 'Watermelon', 'Window'],
-      'X': ['X-ray', 'Xbox', 'Xerox'],
-      'Y': ['Yellow', 'Yogurt', 'Yawn'],
-      'Z': ['Zoo', 'Zipper', 'Zombie'],
-    };
-    return words[letter.toUpperCase()] ?? ['Word1', 'Word2', 'Word3'];
-  }
-
-  /// Build navigation buttons
   Widget _buildNavigationButtons(Responsive responsive) {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -1489,7 +1298,6 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  /// Build individual navigation button
   Widget _buildNavButton({
     required String label,
     required IconData icon,
@@ -1498,9 +1306,9 @@ class _DetailScreenState extends State<DetailScreen>
   }) {
     final isEnabled = onPressed != null;
 
-    void _handleTap() {
+    void handleTap() {
       if (onPressed != null) {
-        AppHapticFeedback.medium(); // Medium feedback for navigation
+        AppHapticFeedback.medium();
         onPressed();
       }
     }
@@ -1509,7 +1317,7 @@ class _DetailScreenState extends State<DetailScreen>
       onTapDown: isEnabled ? (_) => _scaleController.forward() : null,
       onTapUp: isEnabled ? (_) => _scaleController.reverse() : null,
       onTapCancel: isEnabled ? () => _scaleController.reverse() : null,
-      onTap: _handleTap,
+      onTap: isEnabled ? handleTap : null,
       child: AnimatedBuilder(
         animation: _scaleController,
         builder: (context, child) {

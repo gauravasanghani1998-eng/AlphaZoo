@@ -1,3 +1,6 @@
+# Local build tools (e.g. ffmpeg for audio trimming)
+.tools/
+
 # Miscellaneous
 *.class
 *.log

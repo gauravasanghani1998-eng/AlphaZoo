@@ -1,0 +1,488 @@
+/// Gujarati swar (13) and kakko (34) — same role as [AlphabetData] for English A–Z.
+class GujaratiLetterItem {
+  final String id;
+  final String glyph;
+  final String romanKey;
+  final String primaryWord;
+  final String speakStem;
+  final List<String> moreWords;
+  final GujaratiLetterCategory category;
+
+  const GujaratiLetterItem({
+    required this.id,
+    required this.glyph,
+    required this.romanKey,
+    required this.primaryWord,
+    required this.speakStem,
+    required this.moreWords,
+    required this.category,
+  });
+
+  String get aboutKey =>
+      'nativeScript.detail.${category.name}.$id.about';
+
+  String get funFactKey =>
+      'nativeScript.detail.${category.name}.$id.funFact';
+
+  String get speakKey =>
+      'nativeScript.detail.${category.name}.$id.speak';
+}
+
+enum GujaratiLetterCategory { swar, kakko }
+
+class GujaratiAlphabetData {
+  GujaratiAlphabetData._();
+
+  static const List<GujaratiLetterItem> swar = [
+    GujaratiLetterItem(
+      id: 'a',
+      glyph: 'અ',
+      romanKey: 'nativeScript.roman.swar.a',
+      primaryWord: 'અનાર',
+      speakStem: 'anar',
+      moreWords: ['અંબર', 'અશ્વ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'aa',
+      glyph: 'આ',
+      romanKey: 'nativeScript.roman.swar.aa',
+      primaryWord: 'આંબા',
+      speakStem: 'amba',
+      moreWords: ['આકાશ', 'આંખ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'i',
+      glyph: 'ઇ',
+      romanKey: 'nativeScript.roman.swar.i',
+      primaryWord: 'ઇમારત',
+      speakStem: 'imarat',
+      moreWords: ['ઇંટ', 'ઇતિહાસ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'ii',
+      glyph: 'ઈ',
+      romanKey: 'nativeScript.roman.swar.ii',
+      primaryWord: 'ઈદ',
+      speakStem: 'eed',
+      moreWords: ['ઈશાન', 'ઈશ્વર'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'u',
+      glyph: 'ઉ',
+      romanKey: 'nativeScript.roman.swar.u',
+      primaryWord: 'ઉંટ',
+      speakStem: 'unt',
+      moreWords: ['ઉત્સવ', 'ઉંઘ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'uu',
+      glyph: 'ઊ',
+      romanKey: 'nativeScript.roman.swar.uu',
+      primaryWord: 'ઊન',
+      speakStem: 'oon',
+      moreWords: ['ઊંચ', 'ઊંચાઈ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'ri',
+      glyph: 'ઋ',
+      romanKey: 'nativeScript.roman.swar.ri',
+      primaryWord: 'ઋષિ',
+      speakStem: 'rishi',
+      moreWords: ['ઋતુ', 'ઋણ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'e',
+      glyph: 'એ',
+      romanKey: 'nativeScript.roman.swar.e',
+      primaryWord: 'એકડો',
+      speakStem: 'ekado',
+      moreWords: ['એરપ્લેન', 'એકતા'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'ai',
+      glyph: 'ઐ',
+      romanKey: 'nativeScript.roman.swar.ai',
+      primaryWord: 'ઐરાવત',
+      speakStem: 'airavat',
+      moreWords: ['ઐક્ય', 'ઐતિહાસિક'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'o',
+      glyph: 'ઓ',
+      romanKey: 'nativeScript.roman.swar.o',
+      primaryWord: 'ઓખલી',
+      speakStem: 'okhali',
+      moreWords: ['ઓછું', 'ઓળખ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'au',
+      glyph: 'ઔ',
+      romanKey: 'nativeScript.roman.swar.au',
+      primaryWord: 'ઔષધિ',
+      speakStem: 'aushadhi',
+      moreWords: ['ઔરવ', 'ઔષધ'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'am',
+      glyph: 'અં',
+      romanKey: 'nativeScript.roman.swar.am',
+      primaryWord: 'અંગૂર',
+      speakStem: 'angur',
+      moreWords: ['અંગ', 'અંધારું'],
+      category: GujaratiLetterCategory.swar,
+    ),
+    GujaratiLetterItem(
+      id: 'aha',
+      glyph: 'અઃ',
+      romanKey: 'nativeScript.roman.swar.aha',
+      primaryWord: 'દુઃખ',
+      speakStem: 'dukh',
+      moreWords: ['અહં', 'અહિંસા'],
+      category: GujaratiLetterCategory.swar,
+    ),
+  ];
+
+  static const List<GujaratiLetterItem> kakko = [
+    GujaratiLetterItem(
+      id: 'ka',
+      glyph: 'ક',
+      romanKey: 'nativeScript.roman.kakko.ka',
+      primaryWord: 'કમળ',
+      speakStem: 'kamal',
+      moreWords: ['કાગળ', 'કપાળ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'kha',
+      glyph: 'ખ',
+      romanKey: 'nativeScript.roman.kakko.kha',
+      primaryWord: 'ખટારો',
+      speakStem: 'khatara',
+      moreWords: ['ખટાટ', 'ખુરશી'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ga',
+      glyph: 'ગ',
+      romanKey: 'nativeScript.roman.kakko.ga',
+      primaryWord: 'ગણપતિ',
+      speakStem: 'ganpati',
+      moreWords: ['ગાડી', 'ગામ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'gha',
+      glyph: 'ઘ',
+      romanKey: 'nativeScript.roman.kakko.gha',
+      primaryWord: 'ઘર',
+      speakStem: 'ghar',
+      moreWords: ['ઘડિયાળ', 'ઘોડો'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'cha',
+      glyph: 'ચ',
+      romanKey: 'nativeScript.roman.kakko.cha',
+      primaryWord: 'ચકલી',
+      speakStem: 'chakli',
+      moreWords: ['ચમચી', 'ચાંદ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'chha',
+      glyph: 'છ',
+      romanKey: 'nativeScript.roman.kakko.chha',
+      primaryWord: 'છત્રી',
+      speakStem: 'chatri',
+      moreWords: ['છાપું', 'છૂટ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ja',
+      glyph: 'જ',
+      romanKey: 'nativeScript.roman.kakko.ja',
+      primaryWord: 'જહાજ',
+      speakStem: 'jahaj',
+      moreWords: ['જંગલ', 'જમીન'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'jha',
+      glyph: 'ઝ',
+      romanKey: 'nativeScript.roman.kakko.jha',
+      primaryWord: 'ઝભલો',
+      speakStem: 'zabhalo',
+      moreWords: ['ઝૂંબેશ', 'ઝભ્ભો'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'tta',
+      glyph: 'ટ',
+      romanKey: 'nativeScript.roman.kakko.tta',
+      primaryWord: 'ટપાલી',
+      speakStem: 'tapali',
+      moreWords: ['ટોપી', 'ટેબલ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ttha',
+      glyph: 'ઠ',
+      romanKey: 'nativeScript.roman.kakko.ttha',
+      primaryWord: 'ઠળિયું',
+      speakStem: 'thaliyu',
+      moreWords: ['ઠેકાણ', 'ઠપકો'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'dda',
+      glyph: 'ડ',
+      romanKey: 'nativeScript.roman.kakko.dda',
+      primaryWord: 'ડમરુ',
+      speakStem: 'damaru',
+      moreWords: ['ડાયનમાઇટ', 'ડોક્ટર'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ddha',
+      glyph: 'ઢ',
+      romanKey: 'nativeScript.roman.kakko.ddha',
+      primaryWord: 'ઢગલો',
+      speakStem: 'dhagalo',
+      moreWords: ['ઢાંકણ', 'ઢોર'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'nna',
+      glyph: 'ણ',
+      romanKey: 'nativeScript.roman.kakko.nna',
+      primaryWord: 'ફેણ',
+      speakStem: 'phen',
+      moreWords: ['કણ', 'વાણી'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ta',
+      glyph: 'ત',
+      romanKey: 'nativeScript.roman.kakko.ta',
+      primaryWord: 'તલવાર',
+      speakStem: 'talvar',
+      moreWords: ['તાપ', 'તાલ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'tha',
+      glyph: 'થ',
+      romanKey: 'nativeScript.roman.kakko.tha',
+      primaryWord: 'થાળી',
+      speakStem: 'thali',
+      moreWords: ['થાળું', 'થકાવટ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'da',
+      glyph: 'દ',
+      romanKey: 'nativeScript.roman.kakko.da',
+      primaryWord: 'દડો',
+      speakStem: 'dado',
+      moreWords: ['દરવાજો', 'દિવાલ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'dha',
+      glyph: 'ધ',
+      romanKey: 'nativeScript.roman.kakko.dha',
+      primaryWord: 'ધજા',
+      speakStem: 'dhaja',
+      moreWords: ['ધન', 'ધર્મ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'na',
+      glyph: 'ન',
+      romanKey: 'nativeScript.roman.kakko.na',
+      primaryWord: 'નળ',
+      speakStem: 'nal',
+      moreWords: ['નદી', 'નક'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'pa',
+      glyph: 'પ',
+      romanKey: 'nativeScript.roman.kakko.pa',
+      primaryWord: 'પતંગ',
+      speakStem: 'patang',
+      moreWords: ['પાણી', 'પર્વત'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'pha',
+      glyph: 'ફ',
+      romanKey: 'nativeScript.roman.kakko.pha',
+      primaryWord: 'ફટાકડો',
+      speakStem: 'phatakdo',
+      moreWords: ['ફળ', 'ફરજ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ba',
+      glyph: 'બ',
+      romanKey: 'nativeScript.roman.kakko.ba',
+      primaryWord: 'બકરી',
+      speakStem: 'bakri',
+      moreWords: ['બગીચો', 'બાળક'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'bha',
+      glyph: 'ભ',
+      romanKey: 'nativeScript.roman.kakko.bha',
+      primaryWord: 'ભમરડો',
+      speakStem: 'bhamardo',
+      moreWords: ['ભાષા', 'ભોજન'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ma',
+      glyph: 'મ',
+      romanKey: 'nativeScript.roman.kakko.ma',
+      primaryWord: 'મરચું',
+      speakStem: 'marchu',
+      moreWords: ['મકાન', 'મોર'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ya',
+      glyph: 'ય',
+      romanKey: 'nativeScript.roman.kakko.ya',
+      primaryWord: 'યતિ',
+      speakStem: 'yati',
+      moreWords: ['યાત્રા', 'યોગ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ra',
+      glyph: 'ર',
+      romanKey: 'nativeScript.roman.kakko.ra',
+      primaryWord: 'રથ',
+      speakStem: 'rath',
+      moreWords: ['રસ્તો', 'રાજા'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'la',
+      glyph: 'લ',
+      romanKey: 'nativeScript.roman.kakko.la',
+      primaryWord: 'લખોટી',
+      speakStem: 'lakhoti',
+      moreWords: ['લાકડું', 'લાલ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'va',
+      glyph: 'વ',
+      romanKey: 'nativeScript.roman.kakko.va',
+      primaryWord: 'વહાણ',
+      speakStem: 'vahan',
+      moreWords: ['વખત', 'વન'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'sha',
+      glyph: 'શ',
+      romanKey: 'nativeScript.roman.kakko.sha',
+      primaryWord: 'શરણાઈ',
+      speakStem: 'sharnai',
+      moreWords: ['શાળા', 'શરીર'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ssha',
+      glyph: 'ષ',
+      romanKey: 'nativeScript.roman.kakko.ssha',
+      primaryWord: 'ષટકોણ',
+      speakStem: 'shatkon',
+      moreWords: ['ષડ્યંત્ર', 'ષડ્ઋશ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'sa',
+      glyph: 'સ',
+      romanKey: 'nativeScript.roman.kakko.sa',
+      primaryWord: 'સસલો',
+      speakStem: 'saslo',
+      moreWords: ['સુરજ', 'સાથી'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ha',
+      glyph: 'હ',
+      romanKey: 'nativeScript.roman.kakko.ha',
+      primaryWord: 'હરણ',
+      speakStem: 'haran',
+      moreWords: ['હવા', 'હાસ્ય'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'lla',
+      glyph: 'ળ',
+      romanKey: 'nativeScript.roman.kakko.lla',
+      primaryWord: 'નળ',
+      speakStem: 'nal',
+      moreWords: ['ળાભ', 'ળક્ષણ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'ksha',
+      glyph: 'ક્ષ',
+      romanKey: 'nativeScript.roman.kakko.ksha',
+      primaryWord: 'ક્ષત્રિય',
+      speakStem: 'kshatriya',
+      moreWords: ['ક્ષેત્ર', 'ક્ષમા'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+    GujaratiLetterItem(
+      id: 'gnya',
+      glyph: 'જ્ઞ',
+      romanKey: 'nativeScript.roman.kakko.gnya',
+      primaryWord: 'જ્ઞાની',
+      speakStem: 'jnani',
+      moreWords: ['જ્ઞાન', 'જ્ઞાનોત્સવ'],
+      category: GujaratiLetterCategory.kakko,
+    ),
+  ];
+
+  static int get swarCount => swar.length;
+
+  static int get kakkoCount => kakko.length;
+
+  static GujaratiLetterItem getSwar(int index) {
+    if (index >= 0 && index < swar.length) return swar[index];
+    return swar.first;
+  }
+
+  static GujaratiLetterItem getKakko(int index) {
+    if (index >= 0 && index < kakko.length) return kakko[index];
+    return kakko.first;
+  }
+
+  static GujaratiLetterItem? findById(String id) {
+    for (final item in swar) {
+      if (item.id == id) return item;
+    }
+    for (final item in kakko) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+}

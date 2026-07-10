@@ -1,147 +1,271 @@
-/// Simple word item used for days, months, family and greetings.
 class WordItem {
   final String text;
-  final String? subtitle;
-  final String? emoji;
+  final String? nameKey;
+  final String? imageAsset;
 
   const WordItem({
     required this.text,
-    this.subtitle,
-    this.emoji,
+    this.nameKey,
+    this.imageAsset,
   });
 }
 
 class EverydayWordsData {
   EverydayWordsData._();
 
+  static const _monthJan = 'assets/images/months/gregorian/january.png';
+  static const _monthFeb = 'assets/images/months/gregorian/february.png';
+  static const _monthMar = 'assets/images/months/gregorian/march.png';
+  static const _monthApr = 'assets/images/months/gregorian/april.png';
+  static const _monthMay = 'assets/images/months/gregorian/may.png';
+  static const _monthJun = 'assets/images/months/gregorian/june.png';
+  static const _monthJul = 'assets/images/months/gregorian/july.png';
+  static const _monthAug = 'assets/images/months/gregorian/august.png';
+  static const _monthSep = 'assets/images/months/gregorian/september.png';
+  static const _monthOct = 'assets/images/months/gregorian/october.png';
+  static const _monthNov = 'assets/images/months/gregorian/november.png';
+  static const _monthDec = 'assets/images/months/gregorian/december.png';
+
   static const List<WordItem> days = [
-    WordItem(text: 'Monday'),
-    WordItem(text: 'Tuesday'),
-    WordItem(text: 'Wednesday'),
-    WordItem(text: 'Thursday'),
-    WordItem(text: 'Friday'),
-    WordItem(text: 'Saturday'),
-    WordItem(text: 'Sunday'),
+    WordItem(
+      text: 'Monday',
+      nameKey: 'days.names.monday',
+      imageAsset: 'assets/images/days/monday.png',
+    ),
+    WordItem(
+      text: 'Tuesday',
+      nameKey: 'days.names.tuesday',
+      imageAsset: 'assets/images/days/tuesday.png',
+    ),
+    WordItem(
+      text: 'Wednesday',
+      nameKey: 'days.names.wednesday',
+      imageAsset: 'assets/images/days/wednesday.png',
+    ),
+    WordItem(
+      text: 'Thursday',
+      nameKey: 'days.names.thursday',
+      imageAsset: 'assets/images/days/thursday.png',
+    ),
+    WordItem(
+      text: 'Friday',
+      nameKey: 'days.names.friday',
+      imageAsset: 'assets/images/days/friday.png',
+    ),
+    WordItem(
+      text: 'Saturday',
+      nameKey: 'days.names.saturday',
+      imageAsset: 'assets/images/days/saturday.png',
+    ),
+    WordItem(
+      text: 'Sunday',
+      nameKey: 'days.names.sunday',
+      imageAsset: 'assets/images/days/sunday.png',
+    ),
   ];
 
-  static const List<WordItem> months = [
-    WordItem(text: 'January'),
-    WordItem(text: 'February'),
-    WordItem(text: 'March'),
-    WordItem(text: 'April'),
-    WordItem(text: 'May'),
-    WordItem(text: 'June'),
-    WordItem(text: 'July'),
-    WordItem(text: 'August'),
-    WordItem(text: 'September'),
-    WordItem(text: 'October'),
-    WordItem(text: 'November'),
-    WordItem(text: 'December'),
+  static const List<WordItem> _gregorianMonths = [
+    WordItem(
+      text: 'January',
+      nameKey: 'months.names.january',
+      imageAsset: _monthJan,
+    ),
+    WordItem(
+      text: 'February',
+      nameKey: 'months.names.february',
+      imageAsset: _monthFeb,
+    ),
+    WordItem(
+      text: 'March',
+      nameKey: 'months.names.march',
+      imageAsset: _monthMar,
+    ),
+    WordItem(
+      text: 'April',
+      nameKey: 'months.names.april',
+      imageAsset: _monthApr,
+    ),
+    WordItem(
+      text: 'May',
+      nameKey: 'months.names.may',
+      imageAsset: _monthMay,
+    ),
+    WordItem(
+      text: 'June',
+      nameKey: 'months.names.june',
+      imageAsset: _monthJun,
+    ),
+    WordItem(
+      text: 'July',
+      nameKey: 'months.names.july',
+      imageAsset: _monthJul,
+    ),
+    WordItem(
+      text: 'August',
+      nameKey: 'months.names.august',
+      imageAsset: _monthAug,
+    ),
+    WordItem(
+      text: 'September',
+      nameKey: 'months.names.september',
+      imageAsset: _monthSep,
+    ),
+    WordItem(
+      text: 'October',
+      nameKey: 'months.names.october',
+      imageAsset: _monthOct,
+    ),
+    WordItem(
+      text: 'November',
+      nameKey: 'months.names.november',
+      imageAsset: _monthNov,
+    ),
+    WordItem(
+      text: 'December',
+      nameKey: 'months.names.december',
+      imageAsset: _monthDec,
+    ),
   ];
 
-  static const List<WordItem> family = [
-    // Around 50 family-related members with emojis
-    WordItem(text: 'Mother', subtitle: 'Mom', emoji: '👩'),
-    WordItem(text: 'Father', subtitle: 'Dad', emoji: '👨'),
-    WordItem(text: 'Brother', subtitle: 'Brother', emoji: '👦'),
-    WordItem(text: 'Sister', subtitle: 'Sister', emoji: '👧'),
-    WordItem(text: 'Grandmother', subtitle: 'Grandma', emoji: '👵'),
-    WordItem(text: 'Grandfather', subtitle: 'Grandpa', emoji: '👴'),
-    WordItem(text: 'Baby', subtitle: 'Little one', emoji: '👶'),
-    WordItem(text: 'Son', subtitle: 'Boy child', emoji: '👦'),
-    WordItem(text: 'Daughter', subtitle: 'Girl child', emoji: '👧'),
-    WordItem(text: 'Uncle', subtitle: 'Mother or father\'s brother', emoji: '👨'),
-    WordItem(text: 'Aunt', subtitle: 'Mother or father\'s sister', emoji: '👩'),
-    WordItem(text: 'Cousin', subtitle: 'Family friend', emoji: '🧒'),
-    WordItem(text: 'Nephew', subtitle: 'Brother or sister\'s son', emoji: '👦'),
-    WordItem(text: 'Niece', subtitle: 'Brother or sister\'s daughter', emoji: '👧'),
-    WordItem(text: 'Stepfather', subtitle: 'Bonus dad', emoji: '👨'),
-    WordItem(text: 'Stepmother', subtitle: 'Bonus mom', emoji: '👩'),
-    WordItem(text: 'Stepson', subtitle: 'Bonus son', emoji: '👦'),
-    WordItem(text: 'Stepdaughter', subtitle: 'Bonus daughter', emoji: '👧'),
-    WordItem(text: 'Father-in-law', subtitle: 'Partner\'s father', emoji: '👴'),
-    WordItem(text: 'Mother-in-law', subtitle: 'Partner\'s mother', emoji: '👵'),
-    WordItem(text: 'Brother-in-law', subtitle: 'Partner\'s brother', emoji: '👨'),
-    WordItem(text: 'Sister-in-law', subtitle: 'Partner\'s sister', emoji: '👩'),
-    WordItem(text: 'Great-grandmother', subtitle: 'Grandma\'s mom', emoji: '👵'),
-    WordItem(text: 'Great-grandfather', subtitle: 'Grandpa\'s dad', emoji: '👴'),
-    WordItem(text: 'Twin Brother', subtitle: 'Same age boy', emoji: '👬'),
-    WordItem(text: 'Twin Sister', subtitle: 'Same age girl', emoji: '👭'),
-    WordItem(text: 'Godfather', subtitle: 'Special family friend', emoji: '👨'),
-    WordItem(text: 'Godmother', subtitle: 'Special family friend', emoji: '👩'),
-    WordItem(text: 'Adopted Son', subtitle: 'Chosen child', emoji: '👦'),
-    WordItem(text: 'Adopted Daughter', subtitle: 'Chosen child', emoji: '👧'),
-    WordItem(text: 'Guardian', subtitle: 'Care taker', emoji: '🧑'),
-    WordItem(text: 'Family Friend', subtitle: 'Close like family', emoji: '🧑‍🤝‍🧑'),
-    WordItem(text: 'Big Brother', subtitle: 'Older brother', emoji: '👦'),
-    WordItem(text: 'Little Brother', subtitle: 'Younger brother', emoji: '👦'),
-    WordItem(text: 'Big Sister', subtitle: 'Older sister', emoji: '👧'),
-    WordItem(text: 'Little Sister', subtitle: 'Younger sister', emoji: '👧'),
-    WordItem(text: 'Pet Dog', subtitle: 'Family dog', emoji: '🐶'),
-    WordItem(text: 'Pet Cat', subtitle: 'Family cat', emoji: '🐱'),
-    WordItem(text: 'Grandson', subtitle: 'Child\'s son', emoji: '👦'),
-    WordItem(text: 'Granddaughter', subtitle: 'Child\'s daughter', emoji: '👧'),
-    // WordItem(text: 'Caring Parent', subtitle: 'Loving adult', emoji: '🧑'),
-    // WordItem(text: 'Happy Family', subtitle: 'Everyone together', emoji: '👨‍👩‍👧‍👦'),
-    WordItem(text: 'Family Home', subtitle: 'Where we live', emoji: '🏠'),
-    // WordItem(text: 'Family Meal', subtitle: 'Eat together', emoji: '🍽️'),
-    // WordItem(text: 'Family Trip', subtitle: 'Travel together', emoji: '✈️'),
-    // WordItem(text: 'Family Photo', subtitle: 'Smile together', emoji: '📸'),
-    WordItem(text: 'New Baby', subtitle: 'Welcome child', emoji: '🍼'),
-    // WordItem(text: 'Caring Grandparents', subtitle: 'Grandma and grandpa', emoji: '👵👴'),
+  static const List<WordItem> _hinduMonths = [
+    WordItem(
+      text: 'Kartak',
+      nameKey: 'months.names.kartak',
+      imageAsset: _monthJan,
+    ),
+    WordItem(
+      text: 'Magshar',
+      nameKey: 'months.names.magshar',
+      imageAsset: _monthFeb,
+    ),
+    WordItem(
+      text: 'Posh',
+      nameKey: 'months.names.posh',
+      imageAsset: _monthMar,
+    ),
+    WordItem(
+      text: 'Maha',
+      nameKey: 'months.names.maha',
+      imageAsset: _monthApr,
+    ),
+    WordItem(
+      text: 'Phagan',
+      nameKey: 'months.names.phagan',
+      imageAsset: _monthMay,
+    ),
+    WordItem(
+      text: 'Chaitra',
+      nameKey: 'months.names.chaitra',
+      imageAsset: _monthJun,
+    ),
+    WordItem(
+      text: 'Vaishakh',
+      nameKey: 'months.names.vaishakh',
+      imageAsset: _monthJul,
+    ),
+    WordItem(
+      text: 'Jeth',
+      nameKey: 'months.names.jeth',
+      imageAsset: _monthAug,
+    ),
+    WordItem(
+      text: 'Ashadh',
+      nameKey: 'months.names.ashadh',
+      imageAsset: _monthSep,
+    ),
+    WordItem(
+      text: 'Shravan',
+      nameKey: 'months.names.shravan',
+      imageAsset: _monthOct,
+    ),
+    WordItem(
+      text: 'Bhadarvo',
+      nameKey: 'months.names.bhadarvo',
+      imageAsset: _monthNov,
+    ),
+    WordItem(
+      text: 'Aaso',
+      nameKey: 'months.names.aaso',
+      imageAsset: _monthDec,
+    ),
   ];
 
-  static const List<WordItem> greetings = [
-    // Around 50 greetings and polite words with emojis
-    WordItem(text: 'Hello', subtitle: 'Hi there', emoji: '👋'),
-    WordItem(text: 'Good Morning', subtitle: 'Morning wish', emoji: '🌅'),
-    WordItem(text: 'Good Afternoon', subtitle: 'Afternoon wish', emoji: '🌞'),
-    WordItem(text: 'Good Evening', subtitle: 'Evening wish', emoji: '🌆'),
-    WordItem(text: 'Good Night', subtitle: 'Night wish', emoji: '🌙'),
-    WordItem(text: 'Thank You', subtitle: 'Be thankful', emoji: '🙏'),
-    WordItem(text: 'Please', subtitle: 'Ask kindly', emoji: '😊'),
-    WordItem(text: 'Sorry', subtitle: 'Say sorry', emoji: '😔'),
-    WordItem(text: 'Excuse Me', subtitle: 'Get attention', emoji: '🙋'),
-    WordItem(text: 'You\'re Welcome', subtitle: 'Answer to thanks', emoji: '🤗'),
-    WordItem(text: 'Nice to Meet You', subtitle: 'First greeting', emoji: '🤝'),
-    WordItem(text: 'See You Soon', subtitle: 'Goodbye for now', emoji: '👋'),
-    WordItem(text: 'Take Care', subtitle: 'Be safe', emoji: '❤️'),
-    WordItem(text: 'Welcome', subtitle: 'Happy to see you', emoji: '🎉'),
-    WordItem(text: 'How Are You?', subtitle: 'Ask kindly', emoji: '🙂'),
-    WordItem(text: 'I\'m Fine', subtitle: 'Answer to how are you', emoji: '😄'),
-    WordItem(text: 'Good Job', subtitle: 'Nice work', emoji: '👏'),
-    WordItem(text: 'Well Done', subtitle: 'Great effort', emoji: '🌟'),
-    WordItem(text: 'Best Wishes', subtitle: 'Good luck', emoji: '🍀'),
-    WordItem(text: 'Happy Birthday', subtitle: 'Birthday wish', emoji: '🎂'),
-    WordItem(text: 'Happy Holidays', subtitle: 'Festival wish', emoji: '🎄'),
-    WordItem(text: 'Congratulations', subtitle: 'Celebrate success', emoji: '🏆'),
-    WordItem(text: 'Get Well Soon', subtitle: 'For sick person', emoji: '🤒'),
-    WordItem(text: 'Good Luck', subtitle: 'Before a test', emoji: '🍀'),
-    WordItem(text: 'May I Help You?', subtitle: 'Offer help', emoji: '🤝'),
-    WordItem(text: 'Thank You Very Much', subtitle: 'Extra thankful', emoji: '🙇'),
-    WordItem(text: 'Excuse Me Please', subtitle: 'Very polite', emoji: '🙋‍♂️'),
-    WordItem(text: 'I\'m Sorry', subtitle: 'Say sorry politely', emoji: '😢'),
-    WordItem(text: 'No Problem', subtitle: 'It\'s okay', emoji: '👌'),
-    WordItem(text: 'Pardon Me', subtitle: 'Ask to repeat', emoji: '🗣️'),
-    WordItem(text: 'Long Time No See', subtitle: 'After many days', emoji: '🤗'),
-    WordItem(text: 'Good to See You', subtitle: 'Happy meeting', emoji: '😊'),
-    WordItem(text: 'Have a Nice Day', subtitle: 'Day wish', emoji: '🌞'),
-    WordItem(text: 'Have a Great Time', subtitle: 'Enjoy!', emoji: '🎉'),
-    WordItem(text: 'Sweet Dreams', subtitle: 'Night wish', emoji: '😴'),
-    WordItem(text: 'Safe Journey', subtitle: 'Travel wish', emoji: '🚌'),
-    WordItem(text: 'Welcome Home', subtitle: 'Back to home', emoji: '🏠'),
-    WordItem(text: 'I Miss You', subtitle: 'Miss someone', emoji: '🥺'),
-    WordItem(text: 'I Love You', subtitle: 'Show love', emoji: '❤️'),
-    WordItem(text: 'Good to Have You', subtitle: 'Glad you came', emoji: '🤗'),
-    WordItem(text: 'Please Listen', subtitle: 'Be attentive', emoji: '👂'),
-    WordItem(text: 'Please Wait', subtitle: 'Ask to wait', emoji: '⏳'),
-    WordItem(text: 'Come In Please', subtitle: 'Enter kindly', emoji: '🚪'),
-    WordItem(text: 'Sit Down Please', subtitle: 'Offer a seat', emoji: '🪑'),
-    WordItem(text: 'Stand Up Please', subtitle: 'Ask to stand', emoji: '🧍'),
-    WordItem(text: 'Thank You Teacher', subtitle: 'Respect teacher', emoji: '👩‍🏫'),
-    WordItem(text: 'Good Morning Teacher', subtitle: 'School greeting', emoji: '🏫'),
-    WordItem(text: 'Good Bye', subtitle: 'Final bye', emoji: '👋'),
-    WordItem(text: 'Peace Be With You', subtitle: 'Kind blessing', emoji: '🕊️'),
+  static const List<WordItem> _tamilMonths = [
+    WordItem(
+      text: 'Chithirai',
+      nameKey: 'months.names.chithirai',
+      imageAsset: _monthJan,
+    ),
+    WordItem(
+      text: 'Vaikasi',
+      nameKey: 'months.names.vaikasi',
+      imageAsset: _monthFeb,
+    ),
+    WordItem(
+      text: 'Aani',
+      nameKey: 'months.names.aani',
+      imageAsset: _monthMar,
+    ),
+    WordItem(
+      text: 'Aadi',
+      nameKey: 'months.names.aadi',
+      imageAsset: _monthApr,
+    ),
+    WordItem(
+      text: 'Aavani',
+      nameKey: 'months.names.aavani',
+      imageAsset: _monthMay,
+    ),
+    WordItem(
+      text: 'Purattasi',
+      nameKey: 'months.names.purattasi',
+      imageAsset: _monthJun,
+    ),
+    WordItem(
+      text: 'Aippasi',
+      nameKey: 'months.names.aippasi',
+      imageAsset: _monthJul,
+    ),
+    WordItem(
+      text: 'Karthigai',
+      nameKey: 'months.names.karthigai',
+      imageAsset: _monthAug,
+    ),
+    WordItem(
+      text: 'Margazhi',
+      nameKey: 'months.names.margazhi',
+      imageAsset: _monthSep,
+    ),
+    WordItem(
+      text: 'Thai',
+      nameKey: 'months.names.thai',
+      imageAsset: _monthOct,
+    ),
+    WordItem(
+      text: 'Maasi',
+      nameKey: 'months.names.maasi',
+      imageAsset: _monthNov,
+    ),
+    WordItem(
+      text: 'Panguni',
+      nameKey: 'months.names.panguni',
+      imageAsset: _monthDec,
+    ),
   ];
+
+  static List<WordItem> monthsForLocale(String languageCode) {
+    switch (languageCode) {
+      case 'gu':
+      case 'hi':
+      case 'mr':
+      case 'pa':
+        return _hinduMonths;
+      case 'ta':
+        return _tamilMonths;
+      default:
+        return _gregorianMonths;
+    }
+  }
+
+  static List<WordItem> get months => _gregorianMonths;
 }
-

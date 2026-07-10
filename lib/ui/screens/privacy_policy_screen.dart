@@ -14,7 +14,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF3D0).withValues(alpha: 0.95),
+        backgroundColor: AppColors.appBarTint.withValues(alpha: 0.95),
         elevation: 4,
         shadowColor: Colors.orange.withValues(alpha: 0.2),
         leading: IconButton(

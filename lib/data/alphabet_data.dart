@@ -1,240 +1,241 @@
 import '../core/app_assets.dart';
 
-/// Model class for alphabet items
 class AlphabetItem {
   final String letter;
+  final String id;
   final String image;
-  final String word;
-  final String description;
-  final String funFact;
   final String sound;
+  final String word;
+  final List<String> moreWords;
 
   const AlphabetItem({
     required this.letter,
+    required this.id,
     required this.image,
-    required this.word,
-    required this.description,
-    required this.funFact,
     required this.sound,
+    required this.word,
+    required this.moreWords,
   });
+
+  String get descriptionKey => 'alphabet.letters.$id.description';
+
+  String get funFactKey => 'alphabet.letters.$id.funFact';
 }
 
-/// Static data source for all 26 letters
 class AlphabetData {
   AlphabetData._();
 
   static final List<AlphabetItem> items = [
     AlphabetItem(
       letter: 'A',
+      id: 'a',
       image: AppAssets.letterImage('a'),
-      word: 'Apple',
-      description: 'A is for Apple, a sweet and crunchy fruit that grows on trees!',
-      funFact: 'Apples come in many colors: red, green, and yellow!',
       sound: 'ay',
+      word: 'Apple',
+      moreWords: ['Ant', 'Airplane', 'Alligator'],
     ),
     AlphabetItem(
       letter: 'B',
+      id: 'b',
       image: AppAssets.letterImage('b'),
-      word: 'Ball',
-      description: 'B is for Ball, round and bouncy, perfect for playing!',
-      funFact: 'Balls can bounce high when you throw them down!',
       sound: 'buh',
+      word: 'Ball',
+      moreWords: ['Bear', 'Banana', 'Butterfly'],
     ),
     AlphabetItem(
       letter: 'C',
+      id: 'c',
       image: AppAssets.letterImage('c'),
-      word: 'Cat',
-      description: 'C is for Cat, a soft and furry friend with whiskers!',
-      funFact: 'Cats love to purr when they are happy and comfortable!',
       sound: 'kuh',
+      word: 'Cat',
+      moreWords: ['Cake', 'Carrot', 'Castle'],
     ),
     AlphabetItem(
       letter: 'D',
+      id: 'd',
       image: AppAssets.letterImage('d'),
-      word: 'Dolphin',
-      description: 'D is for Dolphin, a smart and playful creature of the sea!',
-      funFact: 'Dolphins can jump high out of the water and do flips!',
       sound: 'duh',
+      word: 'Dog',
+      moreWords: ['Dolphin', 'Duck', 'Dragon'],
     ),
     AlphabetItem(
       letter: 'E',
+      id: 'e',
       image: AppAssets.letterImage('e'),
-      word: 'Elephant',
-      description: 'E is for Elephant, the biggest land animal with a long trunk!',
-      funFact: 'Elephants use their trunks to drink water and pick up things!',
       sound: 'eh',
+      word: 'Elephant',
+      moreWords: ['Egg', 'Eagle', 'Envelope'],
     ),
     AlphabetItem(
       letter: 'F',
+      id: 'f',
       image: AppAssets.letterImage('f'),
-      word: 'Fish',
-      description: 'F is for Fish, colorful swimmers that live underwater!',
-      funFact: 'Fish breathe through gills and can swim very fast!',
       sound: 'fuh',
+      word: 'Fish',
+      moreWords: ['Frog', 'Flower', 'Fire'],
     ),
     AlphabetItem(
       letter: 'G',
+      id: 'g',
       image: AppAssets.letterImage('g'),
-      word: 'Giraffe',
-      description: 'G is for Giraffe, with a long neck to reach the tallest trees!',
-      funFact: 'Giraffes are the tallest animals in the world!',
       sound: 'guh',
+      word: 'Gun',
+      moreWords: ['Giraffe', 'Grapes', 'Guitar'],
     ),
     AlphabetItem(
       letter: 'H',
+      id: 'h',
       image: AppAssets.letterImage('h'),
-      word: 'House',
-      description: 'H is for House, a cozy place where families live together!',
-      funFact: 'Every house is special and different, just like you!',
       sound: 'huh',
+      word: 'House',
+      moreWords: ['Hat', 'Horse', 'Helicopter'],
     ),
     AlphabetItem(
       letter: 'I',
+      id: 'i',
       image: AppAssets.letterImage('i'),
-      word: 'Ice Cream',
-      description: 'I is for Ice Cream, a cold and sweet treat on a hot day!',
-      funFact: 'Ice cream comes in so many yummy flavors!',
       sound: 'ih',
+      word: 'Ice Cream',
+      moreWords: ['Igloo', 'Insect', 'Island'],
     ),
     AlphabetItem(
       letter: 'J',
+      id: 'j',
       image: AppAssets.letterImage('j'),
-      word: 'Jar',
-      description: 'J is for Jar, a container that can hold yummy treats!',
-      funFact: 'You can store cookies, candies, or jam in a jar!',
       sound: 'juh',
+      word: 'Jug',
+      moreWords: ['Jar', 'Juice', 'Jacket'],
     ),
     AlphabetItem(
       letter: 'K',
+      id: 'k',
       image: AppAssets.letterImage('k'),
-      word: 'Kite',
-      description: 'K is for Kite, flying high in the sky on a windy day!',
-      funFact: 'Kites need wind to fly up into the sky!',
       sound: 'kuh',
+      word: 'Kite',
+      moreWords: ['King', 'Kangaroo', 'Key'],
     ),
     AlphabetItem(
       letter: 'L',
+      id: 'l',
       image: AppAssets.letterImage('l'),
-      word: 'Lion',
-      description: 'L is for Lion, the brave king of the jungle with a big mane!',
-      funFact: 'Lions live in groups called prides!',
       sound: 'luh',
+      word: 'Lion',
+      moreWords: ['Lemon', 'Ladybug', 'Lamp'],
     ),
     AlphabetItem(
       letter: 'M',
+      id: 'm',
       image: AppAssets.letterImage('m'),
-      word: 'Monkey',
-      description: 'M is for Monkey, swinging through trees and eating bananas!',
-      funFact: 'Monkeys love to play and are very good climbers!',
       sound: 'muh',
+      word: 'Monkey',
+      moreWords: ['Mouse', 'Moon', 'Mountain'],
     ),
     AlphabetItem(
       letter: 'N',
+      id: 'n',
       image: AppAssets.letterImage('n'),
-      word: 'Nest',
-      description: 'N is for Nest, a cozy home where birds lay their eggs!',
-      funFact: 'Birds build nests with twigs and leaves!',
       sound: 'nuh',
+      word: 'Nest',
+      moreWords: ['Nose', 'Noodles', 'Notebook'],
     ),
     AlphabetItem(
       letter: 'O',
+      id: 'o',
       image: AppAssets.letterImage('o'),
-      word: 'Orange',
-      description: 'O is for Orange, a juicy fruit full of vitamin C!',
-      funFact: 'Oranges are both a fruit and a color!',
       sound: 'oh',
+      word: 'Orange',
+      moreWords: ['Octopus', 'Owl', 'Ocean'],
     ),
     AlphabetItem(
       letter: 'P',
+      id: 'p',
       image: AppAssets.letterImage('p'),
-      word: 'Panda',
-      description: 'P is for Panda, a cuddly black and white bear that loves bamboo!',
-      funFact: 'Pandas spend most of their day eating bamboo!',
       sound: 'puh',
+      word: 'Parrot',
+      moreWords: ['Panda', 'Penguin', 'Pencil'],
     ),
     AlphabetItem(
       letter: 'Q',
+      id: 'q',
       image: AppAssets.letterImage('q'),
-      word: 'Queen',
-      description: 'Q is for Queen, a royal leader who wears a beautiful crown!',
-      funFact: 'Queens live in palaces and wear fancy dresses!',
       sound: 'kwuh',
+      word: 'Queen',
+      moreWords: ['Quilt', 'Question', 'Quail'],
     ),
     AlphabetItem(
       letter: 'R',
+      id: 'r',
       image: AppAssets.letterImage('r'),
-      word: 'Rocket',
-      description: 'R is for Rocket, zooming through space to explore the stars!',
-      funFact: 'Rockets can travel to the moon and beyond!',
       sound: 'ruh',
+      word: 'Rabbit',
+      moreWords: ['Rocket', 'Rainbow', 'River'],
     ),
     AlphabetItem(
       letter: 'S',
+      id: 's',
       image: AppAssets.letterImage('s'),
-      word: 'Sun',
-      description: 'S is for Sun, shining bright and keeping us warm every day!',
-      funFact: 'The sun is a big star that gives us light and warmth!',
       sound: 'suh',
+      word: 'Sun',
+      moreWords: ['Star', 'Snake', 'Sandwich'],
     ),
     AlphabetItem(
       letter: 'T',
+      id: 't',
       image: AppAssets.letterImage('t'),
-      word: 'Tree',
-      description: 'T is for Tree, tall and strong with leaves and branches!',
-      funFact: 'Trees give us fresh air and shade on sunny days!',
       sound: 'tuh',
+      word: 'Tiger',
+      moreWords: ['Tree', 'Turtle', 'Telephone'],
     ),
     AlphabetItem(
       letter: 'U',
+      id: 'u',
       image: AppAssets.letterImage('u'),
-      word: 'Umbrella',
-      description: 'U is for Umbrella, keeping us dry when it rains!',
-      funFact: 'Umbrellas come in many colors and patterns!',
       sound: 'uh',
+      word: 'Umbrella',
+      moreWords: ['Unicorn', 'Union', 'Universe'],
     ),
     AlphabetItem(
       letter: 'V',
+      id: 'v',
       image: AppAssets.letterImage('v'),
-      word: 'Violin',
-      description: 'V is for Violin, a musical instrument that makes beautiful sounds!',
-      funFact: 'You play the violin with a bow and make lovely music!',
       sound: 'vuh',
+      word: 'Violin',
+      moreWords: ['Vase', 'Vegetable', 'Volcano'],
     ),
     AlphabetItem(
       letter: 'W',
+      id: 'w',
       image: AppAssets.letterImage('w'),
-      word: 'Whale',
-      description: 'W is for Whale, the largest animal swimming in the ocean!',
-      funFact: 'Whales can sing songs under the water!',
       sound: 'wuh',
+      word: 'Watch',
+      moreWords: ['Whale', 'Wolf', 'Window'],
     ),
     AlphabetItem(
       letter: 'X',
+      id: 'x',
       image: AppAssets.letterImage('x'),
-      word: 'Xylophone',
-      description: 'X is for Xylophone, a colorful instrument you play with mallets!',
-      funFact: 'Each bar on a xylophone makes a different musical note!',
       sound: 'ks',
+      word: 'Xmas Tree',
+      moreWords: ['Xylophone', 'X-ray', 'Xbox'],
     ),
     AlphabetItem(
       letter: 'Y',
+      id: 'y',
       image: AppAssets.letterImage('y'),
-      word: 'Yacht',
-      description: 'Y is for Yacht, a fancy boat that sails on the water!',
-      funFact: 'Yachts have big sails to catch the wind!',
       sound: 'yuh',
+      word: 'Yak',
+      moreWords: ['Yacht', 'Yellow', 'Yogurt'],
     ),
     AlphabetItem(
       letter: 'Z',
+      id: 'z',
       image: AppAssets.letterImage('z'),
-      word: 'Zebra',
-      description: 'Z is for Zebra, a striped animal that looks like a horse!',
-      funFact: 'Every zebra has its own unique stripe pattern!',
       sound: 'zuh',
+      word: 'Zebra',
+      moreWords: ['Zoo', 'Zipper', 'Zombie'],
     ),
   ];
 
-  /// Get a specific letter item by index
   static AlphabetItem getItem(int index) {
     if (index >= 0 && index < items.length) {
       return items[index];
@@ -242,7 +243,6 @@ class AlphabetData {
     return items[0];
   }
 
-  /// Get a specific letter item by letter
   static AlphabetItem? getItemByLetter(String letter) {
     try {
       return items.firstWhere(
@@ -253,6 +253,5 @@ class AlphabetData {
     }
   }
 
-  /// Total count of alphabet items
   static int get count => items.length;
 }

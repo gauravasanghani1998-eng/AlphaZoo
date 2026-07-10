@@ -66,6 +66,37 @@ class Responsive {
     if (width < 600) return 20.0;
     return 24.0;
   }
+
+  /// Bigger tiles for picture + word modules (body, family, vehicles…).
+  int get moduleGridCrossAxisCount {
+    if (width < 400) return 2;
+    if (width < 700) return 3;
+    if (width < 900) return 4;
+    return 5;
+  }
+
+  /// Home play grid — 2 big tiles on phones (easier for little fingers).
+  int get homePlayCrossAxisCount {
+    if (width < 600) return 2;
+    if (width < 900) return 3;
+    return 4;
+  }
+
+  /// Taller play cards so module images can be prominent.
+  double get homePlayAspectRatio {
+    final count = homePlayCrossAxisCount;
+    final gap = gridSpacing + 6;
+    final cellWidth =
+        (width - horizontalPadding * 2 - gap * (count - 1)) / count;
+    // Keep room for a larger image preview + title.
+    const targetHeight = 198.0;
+    return cellWidth / targetHeight;
+  }
+
+  /// Large emoji size for learning tiles.
+  double emojiSize({double factor = 0.1, double min = 36, double max = 52}) {
+    return (width * factor).clamp(min, max);
+  }
 }
 
 /// Extension to use Responsive directly from BuildContext

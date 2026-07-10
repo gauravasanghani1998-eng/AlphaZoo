@@ -1,11 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'core/app_colors.dart';
 import 'ui/screens/splash_screen.dart';
+import 'ui/theme/kid_theme.dart';
 import 'utils/asset_preloader.dart';
+import 'utils/app_speech.dart';
+import 'utils/learning_detail_content.dart';
+import 'utils/rhyme_audio_player.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,10 @@ Future<void> main() async {
 
   // Initialize easy_localization
   await EasyLocalization.ensureInitialized();
+  await LearningDetailContent.preloadScriptTranslations();
+
+  // Register native audio plugin (required before any rhyme playback).
+  await RhymeAudioPlayer.ensurePluginReady();
 
   runApp(
     EasyLocalization(
@@ -50,16 +55,11 @@ class AlphaZooApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      theme: ThemeData(
-        primaryColor: AppColors.primary,
-        scaffoldBackgroundColor: AppColors.background,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.fredokaTextTheme(),
-        useMaterial3: true,
-      ),
+      theme: buildKidTheme(),
+      navigatorObservers: [
+        AppSpeech.stopOnPopObserver,
+        AppSpeech.routeObserver,
+      ],
       home: const SplashScreen(),
     );
   }

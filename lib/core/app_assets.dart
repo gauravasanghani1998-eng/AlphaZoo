@@ -13,6 +13,12 @@ class AppAssets {
   
   // Letter images
   static String letterImage(String letter) => '$_imagesPath/${letter.toLowerCase()}.png';
+
+  // Days of the week & months
+  static String dayImage(String id) => '$_imagesPath/days/$id.png';
+
+  static String monthImage(String id) =>
+      '$_imagesPath/months/gregorian/$id.png';
   
   // Lottie animations (optional)
   static const String lottieSplash = '$_lottiePath/splash.json';

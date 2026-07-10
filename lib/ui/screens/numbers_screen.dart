@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/numbers_data.dart';
-import '../../utils/responsive.dart';
-import '../../utils/haptic_feedback.dart';
 import '../../utils/app_speech.dart';
+import '../../utils/learning_detail_content.dart';
+import '../../utils/number_detail_content.dart';
+import '../../utils/responsive.dart';
+import '../widgets/kid_alphabet_style_detail.dart';
+import '../widgets/kid_module_scaffold.dart';
+import 'kid_learning_detail_screen.dart';
+import '../widgets/kid_pill_selector.dart';
+import '../widgets/kid_section_header.dart';
 
-/// Screen for learning numbers 1–100 with range filters.
 class NumbersScreen extends StatefulWidget {
   const NumbersScreen({super.key});
 
@@ -16,317 +21,150 @@ class NumbersScreen extends StatefulWidget {
   State<NumbersScreen> createState() => _NumbersScreenState();
 }
 
+class _NumberRange {
+  final int start;
+  final int end;
+
+  const _NumberRange(this.start, this.end);
+}
+
 class _NumbersScreenState extends State<NumbersScreen> {
-  String _selectedRange = '1-26';
+  static const _ranges = <_NumberRange>[
+    _NumberRange(1, 26),
+    _NumberRange(27, 52),
+    _NumberRange(53, 78),
+    _NumberRange(79, 100),
+  ];
+
+  int _selectedRangeIndex = 0;
 
   List<NumberItem> get _currentItems {
-    switch (_selectedRange) {
-      case '27-52':
-        return NumbersData.range(27, 52);
-      case '53-78':
-        return NumbersData.range(53, 78);
-      case '79-100':
-        return NumbersData.range(79, 100);
-      case '1-26':
-      default:
-        return NumbersData.range(1, 26);
-    }
+    final range = _ranges[_selectedRangeIndex];
+    return NumbersData.range(range.start, range.end);
   }
+
+  String get _glyphs => NumbersData.glyphsKey.tr();
+
+  String get _fullRangeLabel =>
+      NumbersData.formatDigitRange(1, 100, _glyphs);
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final pad = responsive.horizontalPadding;
+    final top = responsive.verticalPadding;
+    final rangeLabel = _fullRangeLabel;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF3D0).withValues(alpha: 0.95),
-        elevation: 4,
-        shadowColor: Colors.orange.withValues(alpha: 0.2),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.primary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'numbersTitle'.tr(),
-          style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
-        ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.horizontalPadding,
-            vertical: responsive.verticalPadding,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 20),
-              _buildRangeChips(),
-              const SizedBox(height: 20),
-              Expanded(child: _buildGrid(responsive)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    final responsive = context.responsive;
-    final titleSize = (responsive.width * 0.07).clamp(22.0, 30.0);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'numbersHeader'.tr(),
-          style: AppTextStyles.heading1.copyWith(fontSize: titleSize),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'numbersDescription'.tr(),
-          style: AppTextStyles.body,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRangeChips() {
-    const ranges = ['1-26', '27-52', '53-78', '79-100'];
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: ranges.map((range) {
-        final isSelected = _selectedRange == range;
-        return ChoiceChip(
-          label: Text(
-            range,
-            style: AppTextStyles.bodyBold.copyWith(
-              color: isSelected ? Colors.white : AppColors.textSecondary,
-              fontSize: 14,
+    return KidModuleScaffold(
+      title: 'numbers.title'.tr(namedArgs: {'range': rangeLabel}),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(pad, top, pad, top + 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            KidSectionHeader(
+              emoji: '🔢',
+              title: 'numbers.header'.tr(namedArgs: {'range': rangeLabel}),
+              subtitle: 'numbers.description'.tr(),
             ),
-          ),
-          selected: isSelected,
-          selectedColor: AppColors.primary,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(
-              color: isSelected
-                  ? AppColors.primary
-                  : Colors.orange.withValues(alpha: 0.2),
-              width: 2,
+            const SizedBox(height: 16),
+            KidPillSelector(
+              labels: _ranges
+                  .map((r) =>
+                      NumbersData.formatDigitRange(r.start, r.end, _glyphs))
+                  .toList(),
+              selectedIndex: _selectedRangeIndex,
+              onSelected: (index) =>
+                  setState(() => _selectedRangeIndex = index),
             ),
-          ),
-          onSelected: (_) {
-            AppHapticFeedback.light();
-            setState(() => _selectedRange = range);
-          },
-        );
-      }).toList(),
-    );
-  }
+            const SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: responsive.gridCrossAxisCount,
+                crossAxisSpacing: responsive.gridSpacing,
+                mainAxisSpacing: responsive.gridSpacing,
+                childAspectRatio: 1.0,
+              ),
+              itemCount: _currentItems.length,
+              itemBuilder: (context, index) {
+                final item = _currentItems[index];
+                final color = AppColors.getLetterColor((item.value - 1) % 26);
 
-  Widget _buildGrid(Responsive responsive) {
-    final crossAxisCount = responsive.gridCrossAxisCount;
-
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: responsive.gridSpacing,
-        mainAxisSpacing: responsive.gridSpacing,
-        childAspectRatio: 1.0,
+                return _NumberCard(
+                  item: item,
+                  color: color,
+                  onTap: () => _showNumberDetail(context, index),
+                );
+              },
+            ),
+          ],
+        ),
       ),
-      itemCount: _currentItems.length,
-      itemBuilder: (context, index) {
-        final item = _currentItems[index];
-        final color = AppColors.getLetterColor((item.value - 1) % 26);
-
-        return _NumberCard(
-          item: item,
-          color: color,
-          onTap: () => _showNumberDetail(context, index),
-        );
-      },
     );
   }
 
-  void _showNumberDetail(
-    BuildContext parentContext,
-    int itemIndex,
-  ) {
-    AppHapticFeedback.medium();
-
+  void _showNumberDetail(BuildContext context, int itemIndex) {
     final items = _currentItems;
     if (itemIndex < 0 || itemIndex >= items.length) return;
 
-    final item = items[itemIndex];
-    final color = AppColors.getLetterColor((item.value - 1) % 26);
+    final glyphs = _glyphs;
+    final letterSize = (context.responsive.width * 0.2).clamp(52.0, 76.0);
 
-    final canPrev = itemIndex > 0;
-    final canNext = itemIndex < items.length - 1;
+    final pages = items.map((item) {
+      final color = AppColors.getLetterColor((item.value - 1) % 26);
+      final digit = NumbersData.formatDigits(item.value, glyphs);
+      final word = item.nameKey.tr();
+      return LearningDetailContent.numberItem(
+        value: item.value,
+        digitText: digit,
+        word: word,
+        accentColor: color,
+        heroFontSize: letterSize,
+        extraSections: [_numberTraitRow(item.value, color)],
+      );
+    }).toList();
 
-    final responsive = parentContext.responsive;
-    final bigNumberSize = (responsive.width * 0.18).clamp(40.0, 72.0);
-    final wordSize = (responsive.width * 0.09).clamp(20.0, 34.0);
+    final colors = items
+        .map((item) => AppColors.getLetterColor((item.value - 1) % 26))
+        .toList();
 
-    // Speak the number word when opened.
-    AppSpeech.speak(parentContext, item.word);
+    KidLearningDetailScreen.open(
+      context,
+      moduleTitle: 'numbers.title'.tr(namedArgs: {'range': _fullRangeLabel}),
+      initialIndex: itemIndex,
+      pages: pages,
+      accentColors: colors,
+    );
+  }
 
-    showDialog<void>(
-      context: parentContext,
-      builder: (dialogContext) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      color.withValues(alpha: 0.1),
-                      Colors.white,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: color.withValues(alpha: 0.4),
-                    width: 3,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              // Title above circle
-                              'numbersTitle'.tr(),
-                              style: AppTextStyles.heading3
-                                  .copyWith(color: color),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            color: AppColors.textSecondary,
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: responsive.width * 0.35,
-                        height: responsive.width * 0.35,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [
-                              color,
-                              color.withValues(alpha: 0.7),
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.withValues(alpha: 0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${item.value}',
-                            style: AppTextStyles.detailLetter.copyWith(
-                              fontSize: bigNumberSize,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        item.word,
-                        style: AppTextStyles.word.copyWith(
-                          color: color,
-                          fontSize: wordSize,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'numbersDialogExplain'
-                            .tr(namedArgs: {'value': '${item.value}'}),
-                        style: AppTextStyles.body.copyWith(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'numbersDialogHint'.tr(),
-                        style: AppTextStyles.bodyBold.copyWith(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (canPrev)
-                            TextButton.icon(
-                              onPressed: () {
-                                Navigator.of(dialogContext).pop();
-                                _showNumberDetail(
-                                  parentContext,
-                                  itemIndex - 1,
-                                );
-                              },
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                              label: Text('nav.previous'.tr()),
-                            )
-                          else
-                            const SizedBox.shrink(),
-                          if (canNext)
-                            TextButton.icon(
-                              onPressed: () {
-                                Navigator.of(dialogContext).pop();
-                                _showNumberDetail(
-                                  parentContext,
-                                  itemIndex + 1,
-                                );
-                              },
-                              icon:
-                                  const Icon(Icons.arrow_forward_ios_rounded),
-                              label: Text('nav.next'.tr()),
-                            )
-                          else
-                            const SizedBox.shrink(),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+  Widget _numberTraitRow(int value, Color color) {
+    final even = NumberDetailContent.isEven(value);
+    final isRound = NumberDetailContent.isRoundTen(value);
+    final oddEvenLabel =
+        even ? 'numbers.detail.even'.tr() : 'numbers.detail.odd'.tr();
+    final roundLabel = 'numbers.detail.roundTenBadge'.tr();
+
+    return Column(
+      children: [
+        KidAlphabetStyleDetail.infoChip(
+          accentColor: color,
+          label: oddEvenLabel,
+          expandWidth: true,
+          onSpeak: () => AppSpeech.speak(context, oddEvenLabel),
+        ),
+        if (isRound) ...[
+          const SizedBox(height: 8),
+          KidAlphabetStyleDetail.infoChip(
+            accentColor: color,
+            icon: Icons.star_rounded,
+            label: roundLabel,
+            expandWidth: true,
+            onSpeak: () => AppSpeech.speak(context, roundLabel),
           ),
-        );
-      },
+        ],
+      ],
     );
   }
 }
@@ -344,45 +182,59 @@ class _NumberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: color.withValues(alpha: 0.4),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.25),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white,
+                color.withValues(alpha: 0.12),
+              ],
             ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: color.withValues(alpha: 0.45),
+              width: 2.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: color.withValues(alpha: 0.22),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${item.value}',
+                  NumbersData.formatDigits(
+                    item.value,
+                    NumbersData.glyphsKey.tr(),
+                  ),
                   style: AppTextStyles.heading2.copyWith(
                     color: color,
+                    fontSize: 28,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
-                  item.word,
+                  item.nameKey.tr(),
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textSecondary,
+                    fontSize: 11,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -392,4 +244,3 @@ class _NumberCard extends StatelessWidget {
     );
   }
 }
-

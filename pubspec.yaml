@@ -2,7 +2,7 @@ name: alpha_zoo
 description: "AlphaZoo - A-Z Alphabet learning app for kids"
 publish_to: "none"
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -18,6 +18,8 @@ dependencies:
   flame: ^1.33.0
   vibration: ^3.1.5
   connectivity_plus: ^6.0.3
+  characters: ^1.4.0
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +32,10 @@ flutter:
   assets:
     # Images
     - assets/images/
+    - assets/images/modules/
+    - assets/images/body/
+    - assets/images/days/
+    - assets/images/months/gregorian/
     - assets/images/app_logo.png
     - assets/images/placeholder.png
     - assets/images/a.png
@@ -66,3 +72,8 @@ flutter:
     - assets/flame/
     # Localization
     - assets/translations/
+
+    # Nursery rhyme songs (see assets/audio/rhymes/ATTRIBUTION.md)
+    - assets/audio/rhymes/
+    - assets/audio/gujarati/
+    - assets/audio/hindi/

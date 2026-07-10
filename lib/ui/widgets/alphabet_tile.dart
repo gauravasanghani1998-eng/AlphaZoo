@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/alphabet_data.dart';
 import '../../utils/haptic_feedback.dart';
+import '../../utils/responsive.dart';
 
-/// Individual alphabet tile for grid display
+/// Alphabet grid tile — same card style as numbers (border, shadow, soft fill).
 class AlphabetTile extends StatefulWidget {
   final AlphabetItem item;
   final int index;
@@ -33,7 +35,7 @@ class _AlphabetTileState extends State<AlphabetTile>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
     );
   }
@@ -50,7 +52,7 @@ class _AlphabetTileState extends State<AlphabetTile>
 
   void _handleTapUp(TapUpDetails details) {
     _scaleController.reverse();
-    AppHapticFeedback.light(); // Light feedback for tile taps
+    AppHapticFeedback.light();
     widget.onTap();
   }
 
@@ -61,6 +63,7 @@ class _AlphabetTileState extends State<AlphabetTile>
   @override
   Widget build(BuildContext context) {
     final color = AppColors.getLetterColor(widget.index);
+    final radius = context.responsive.cardRadius.clamp(16.0, 20.0);
 
     return GestureDetector(
       onTapDown: _handleTapDown,
@@ -76,34 +79,54 @@ class _AlphabetTileState extends State<AlphabetTile>
         },
         child: Hero(
           tag: 'letter_${widget.item.letter}',
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color,
-                  color.withValues(alpha: 0.8),
+          child: Material(
+            color: Colors.transparent,
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white,
+                    color.withValues(alpha: 0.12),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(radius),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.45),
+                  width: 2.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.22),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                widget.item.letter,
-                style: AppTextStyles.tileLetter.copyWith(
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      offset: const Offset(2, 2),
-                      blurRadius: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.item.letter,
+                      style: AppTextStyles.heading2.copyWith(
+                        color: color,
+                        fontSize: 32,
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.item.word,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 11,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

@@ -1,282 +1,571 @@
-/// Model class for spelling items grouped by category.
 class SpellingItem {
   final String emoji;
-  final String word;
-  final String category; // animals, fruits, colors, body, nature
+  final String nameKey;
+  final String category;
 
   const SpellingItem({
     required this.emoji,
-    required this.word,
+    required this.nameKey,
     required this.category,
   });
 }
 
-/// Static data for spelling categories and words.
 class SpellingData {
   SpellingData._();
 
   static const List<String> categories = [
     'animals',
+    'birds',
+    'seaAnimals',
     'fruits',
-    // 'colors', // moved to dedicated Shapes & Colors screen
-    'body',
+    'vegetables',
+    'flowers',
     'nature',
   ];
 
   static final List<SpellingItem> items = [
-    // Animals (50)
-    SpellingItem(emoji: '🐶', word: 'Dog', category: 'animals'),
-    SpellingItem(emoji: '🐱', word: 'Cat', category: 'animals'),
-    SpellingItem(emoji: '🦁', word: 'Lion', category: 'animals'),
-    SpellingItem(emoji: '🐘', word: 'Elephant', category: 'animals'),
-    SpellingItem(emoji: '🐼', word: 'Panda', category: 'animals'),
-    SpellingItem(emoji: '🐵', word: 'Monkey', category: 'animals'),
-    SpellingItem(emoji: '🐰', word: 'Rabbit', category: 'animals'),
-    SpellingItem(emoji: '🦊', word: 'Fox', category: 'animals'),
-    SpellingItem(emoji: '🐻', word: 'Bear', category: 'animals'),
-    SpellingItem(emoji: '🐯', word: 'Tiger', category: 'animals'),
-    SpellingItem(emoji: '🦓', word: 'Zebra', category: 'animals'),
-    SpellingItem(emoji: '🦒', word: 'Giraffe', category: 'animals'),
-    SpellingItem(emoji: '🐷', word: 'Pig', category: 'animals'),
-    SpellingItem(emoji: '🐄', word: 'Cow', category: 'animals'),
-    SpellingItem(emoji: '🐔', word: 'Hen', category: 'animals'),
-    SpellingItem(emoji: '🐣', word: 'Chick', category: 'animals'),
-    SpellingItem(emoji: '🐟', word: 'Fish', category: 'animals'),
-    SpellingItem(emoji: '🐬', word: 'Dolphin', category: 'animals'),
-    SpellingItem(emoji: '🐳', word: 'Whale', category: 'animals'),
-    SpellingItem(emoji: '🦈', word: 'Shark', category: 'animals'),
-    SpellingItem(emoji: '🦅', word: 'Eagle', category: 'animals'),
-    SpellingItem(emoji: '🦆', word: 'Duck', category: 'animals'),
-    SpellingItem(emoji: '🦉', word: 'Owl', category: 'animals'),
-    SpellingItem(emoji: '🕊️', word: 'Dove', category: 'animals'),
-    SpellingItem(emoji: '🐍', word: 'Snake', category: 'animals'),
-    SpellingItem(emoji: '🦎', word: 'Lizard', category: 'animals'),
-    SpellingItem(emoji: '🦂', word: 'Scorpion', category: 'animals'),
-    SpellingItem(emoji: '🦋', word: 'Butterfly', category: 'animals'),
-    SpellingItem(emoji: '🐝', word: 'Bee', category: 'animals'),
-    SpellingItem(emoji: '🐞', word: 'Ladybug', category: 'animals'),
-    SpellingItem(emoji: '🐜', word: 'Ant', category: 'animals'),
-    SpellingItem(emoji: '🐢', word: 'Turtle', category: 'animals'),
-    SpellingItem(emoji: '🦭', word: 'Seal', category: 'animals'),
-    SpellingItem(emoji: '🦊', word: 'Jackal', category: 'animals'),
-    SpellingItem(emoji: '🦝', word: 'Raccoon', category: 'animals'),
-    SpellingItem(emoji: '🐇', word: 'Hare', category: 'animals'),
-    SpellingItem(emoji: '🦌', word: 'Deer', category: 'animals'),
-    SpellingItem(emoji: '🐫', word: 'Camel', category: 'animals'),
-    SpellingItem(emoji: '🦍', word: 'Gorilla', category: 'animals'),
-    SpellingItem(emoji: '🐺', word: 'Wolf', category: 'animals'),
-    SpellingItem(emoji: '🦨', word: 'Skunk', category: 'animals'),
-    SpellingItem(emoji: '🦢', word: 'Swan', category: 'animals'),
-    SpellingItem(emoji: '🦜', word: 'Parrot', category: 'animals'),
-    SpellingItem(emoji: '🦩', word: 'Flamingo', category: 'animals'),
-    SpellingItem(emoji: '🐊', word: 'Crocodile', category: 'animals'),
-    SpellingItem(emoji: '🐙', word: 'Octopus', category: 'animals'),
-    SpellingItem(emoji: '🦀', word: 'Crab', category: 'animals'),
-    SpellingItem(emoji: '🦞', word: 'Lobster', category: 'animals'),
-    SpellingItem(emoji: '🦧', word: 'Orangutan', category: 'animals'),
+    SpellingItem(
+        emoji: '🐶',
+        nameKey: 'spelling.animals.names.dog',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐱',
+        nameKey: 'spelling.animals.names.cat',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦁',
+        nameKey: 'spelling.animals.names.lion',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐘',
+        nameKey: 'spelling.animals.names.elephant',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐼',
+        nameKey: 'spelling.animals.names.panda',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐵',
+        nameKey: 'spelling.animals.names.monkey',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦊',
+        nameKey: 'spelling.animals.names.fox',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐰',
+        nameKey: 'spelling.animals.names.rabbit',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐯',
+        nameKey: 'spelling.animals.names.tiger',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐻',
+        nameKey: 'spelling.animals.names.bear',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦓',
+        nameKey: 'spelling.animals.names.zebra',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦒',
+        nameKey: 'spelling.animals.names.giraffe',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐷',
+        nameKey: 'spelling.animals.names.pig',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐄',
+        nameKey: 'spelling.animals.names.cow',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐴',
+        nameKey: 'spelling.animals.names.horse',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐑',
+        nameKey: 'spelling.animals.names.sheep',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐐',
+        nameKey: 'spelling.animals.names.goat',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦌',
+        nameKey: 'spelling.animals.names.deer',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐫',
+        nameKey: 'spelling.animals.names.camel',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐺',
+        nameKey: 'spelling.animals.names.wolf',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦘',
+        nameKey: 'spelling.animals.names.kangaroo',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦍',
+        nameKey: 'spelling.animals.names.gorilla',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦛',
+        nameKey: 'spelling.animals.names.hippo',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦏',
+        nameKey: 'spelling.animals.names.rhino',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐆',
+        nameKey: 'spelling.animals.names.leopard',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐿️',
+        nameKey: 'spelling.animals.names.squirrel',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦔',
+        nameKey: 'spelling.animals.names.hedgehog',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐭',
+        nameKey: 'spelling.animals.names.mouse',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐹',
+        nameKey: 'spelling.animals.names.hamster',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦇',
+        nameKey: 'spelling.animals.names.bat',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐍',
+        nameKey: 'spelling.animals.names.snake',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦎',
+        nameKey: 'spelling.animals.names.lizard',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐸',
+        nameKey: 'spelling.animals.names.frog',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐜',
+        nameKey: 'spelling.animals.names.ant',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐝',
+        nameKey: 'spelling.animals.names.bee',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐞',
+        nameKey: 'spelling.animals.names.ladybug',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦋',
+        nameKey: 'spelling.animals.names.butterfly',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦂',
+        nameKey: 'spelling.animals.names.scorpion',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🕷️',
+        nameKey: 'spelling.animals.names.spider',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦝',
+        nameKey: 'spelling.animals.names.raccoon',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦨',
+        nameKey: 'spelling.animals.names.skunk',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦫',
+        nameKey: 'spelling.animals.names.beaver',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦬',
+        nameKey: 'spelling.animals.names.bison',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐗',
+        nameKey: 'spelling.animals.names.boar',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦡',
+        nameKey: 'spelling.animals.names.badger',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🐊',
+        nameKey: 'spelling.animals.names.crocodile',
+        category: 'animals'),
+    SpellingItem(
+        emoji: '🦧',
+        nameKey: 'spelling.animals.names.orangutan',
+        category: 'animals'),
 
-    // Fruits (50)
-    SpellingItem(emoji: '🍎', word: 'Apple', category: 'fruits'),
-    SpellingItem(emoji: '🍌', word: 'Banana', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Grapes', category: 'fruits'),
-    SpellingItem(emoji: '🍊', word: 'Orange', category: 'fruits'),
-    SpellingItem(emoji: '🍓', word: 'Strawberry', category: 'fruits'),
-    SpellingItem(emoji: '🍉', word: 'Watermelon', category: 'fruits'),
-    SpellingItem(emoji: '🍍', word: 'Pineapple', category: 'fruits'),
-    SpellingItem(emoji: '🥭', word: 'Mango', category: 'fruits'),
-    SpellingItem(emoji: '🍒', word: 'Cherry', category: 'fruits'),
-    SpellingItem(emoji: '🥝', word: 'Kiwi', category: 'fruits'),
-    SpellingItem(emoji: '🍑', word: 'Peach', category: 'fruits'),
-    SpellingItem(emoji: '🍐', word: 'Pear', category: 'fruits'),
-    SpellingItem(emoji: '🍋', word: 'Lemon', category: 'fruits'),
-    SpellingItem(emoji: '🍈', word: 'Melon', category: 'fruits'),
-    SpellingItem(emoji: '🍅', word: 'Tomato', category: 'fruits'),
-    SpellingItem(emoji: '🥥', word: 'Coconut', category: 'fruits'),
-    SpellingItem(emoji: '🍏', word: 'Green Apple', category: 'fruits'),
-    SpellingItem(emoji: '🍊', word: 'Tangerine', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Raisin', category: 'fruits'),
-    SpellingItem(emoji: '🍌', word: 'Plantain', category: 'fruits'),
-    SpellingItem(emoji: '🍓', word: 'Berry', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Blackberry', category: 'fruits'),
-    SpellingItem(emoji: '🍓', word: 'Blueberry', category: 'fruits'),
-    SpellingItem(emoji: '🍊', word: 'Clementine', category: 'fruits'),
-    SpellingItem(emoji: '🍑', word: 'Apricot', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Currant', category: 'fruits'),
-    SpellingItem(emoji: '🍍', word: 'Jackfruit', category: 'fruits'),
-    SpellingItem(emoji: '🍉', word: 'Cantaloupe', category: 'fruits'),
-    SpellingItem(emoji: '🍈', word: 'Honeydew', category: 'fruits'),
-    SpellingItem(emoji: '🍋', word: 'Lime', category: 'fruits'),
-    SpellingItem(emoji: '🍎', word: 'Red Apple', category: 'fruits'),
-    SpellingItem(emoji: '🍐', word: 'Guava', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Grapefruit', category: 'fruits'),
-    SpellingItem(emoji: '🍒', word: 'Plum', category: 'fruits'),
-    SpellingItem(emoji: '🥝', word: 'Fig', category: 'fruits'),
-    SpellingItem(emoji: '🍌', word: 'Date', category: 'fruits'),
-    SpellingItem(emoji: '🍍', word: 'Starfruit', category: 'fruits'),
-    SpellingItem(emoji: '🍊', word: 'Mandarin', category: 'fruits'),
-    SpellingItem(emoji: '🍏', word: 'Crabapple', category: 'fruits'),
-    SpellingItem(emoji: '🍓', word: 'Mulberry', category: 'fruits'),
-    SpellingItem(emoji: '🍒', word: 'Gooseberry', category: 'fruits'),
-    SpellingItem(emoji: '🍑', word: 'Nectarine', category: 'fruits'),
-    SpellingItem(emoji: '🍐', word: 'Persimmon', category: 'fruits'),
-    SpellingItem(emoji: '🍋', word: 'Citron', category: 'fruits'),
-    SpellingItem(emoji: '🍉', word: 'Dragonfruit', category: 'fruits'),
-    SpellingItem(emoji: '🍍', word: 'Lychee', category: 'fruits'),
-    SpellingItem(emoji: '🍈', word: 'Papaya', category: 'fruits'),
-    SpellingItem(emoji: '🍇', word: 'Soursop', category: 'fruits'),
-    SpellingItem(emoji: '🍒', word: 'Rambutan', category: 'fruits'),
+    // Birds
+    SpellingItem(
+        emoji: '🦅', nameKey: 'spelling.birds.names.eagle', category: 'birds'),
+    SpellingItem(
+        emoji: '🦆', nameKey: 'spelling.birds.names.duck', category: 'birds'),
+    SpellingItem(
+        emoji: '🦉', nameKey: 'spelling.birds.names.owl', category: 'birds'),
+    SpellingItem(
+        emoji: '🕊️', nameKey: 'spelling.birds.names.dove', category: 'birds'),
+    SpellingItem(
+        emoji: '🦢', nameKey: 'spelling.birds.names.swan', category: 'birds'),
+    SpellingItem(
+        emoji: '🦜', nameKey: 'spelling.birds.names.parrot', category: 'birds'),
+    SpellingItem(
+        emoji: '🐔', nameKey: 'spelling.birds.names.hen', category: 'birds'),
+    SpellingItem(
+        emoji: '🦩',
+        nameKey: 'spelling.birds.names.flamingo',
+        category: 'birds'),
+    SpellingItem(
+        emoji: '🐣', nameKey: 'spelling.birds.names.chick', category: 'birds'),
+    SpellingItem(
+        emoji: '🐧',
+        nameKey: 'spelling.birds.names.penguin',
+        category: 'birds'),
+    SpellingItem(
+        emoji: '🐓',
+        nameKey: 'spelling.birds.names.rooster',
+        category: 'birds'),
+    SpellingItem(
+        emoji: '🦚',
+        nameKey: 'spelling.birds.names.peacock',
+        category: 'birds'),
+    SpellingItem(
+        emoji: '🦃', nameKey: 'spelling.birds.names.turkey', category: 'birds'),
+    SpellingItem(
+        emoji: '🐤',
+        nameKey: 'spelling.birds.names.babyChick',
+        category: 'birds'),
+    SpellingItem(
+        emoji: '🐦', nameKey: 'spelling.birds.names.bird', category: 'birds'),
 
-    // Colors (50)
-    SpellingItem(emoji: '🔴', word: 'Red', category: 'colors'),
-    SpellingItem(emoji: '🔵', word: 'Blue', category: 'colors'),
-    SpellingItem(emoji: '🟢', word: 'Green', category: 'colors'),
-    SpellingItem(emoji: '🟡', word: 'Yellow', category: 'colors'),
-    SpellingItem(emoji: '⚪', word: 'White', category: 'colors'),
-    SpellingItem(emoji: '⚫', word: 'Black', category: 'colors'),
-    SpellingItem(emoji: '🟣', word: 'Purple', category: 'colors'),
-    SpellingItem(emoji: '🟤', word: 'Brown', category: 'colors'),
-    SpellingItem(emoji: '🟥', word: 'Pink', category: 'colors'),
-    SpellingItem(emoji: '🟦', word: 'Navy', category: 'colors'),
-    SpellingItem(emoji: '🟩', word: 'Olive', category: 'colors'),
-    SpellingItem(emoji: '🟧', word: 'Orange', category: 'colors'),
-    SpellingItem(emoji: '⬜', word: 'Cream', category: 'colors'),
-    SpellingItem(emoji: '⬛', word: 'Charcoal', category: 'colors'),
-    SpellingItem(emoji: '🟪', word: 'Violet', category: 'colors'),
-    SpellingItem(emoji: '🟫', word: 'Chocolate', category: 'colors'),
-    SpellingItem(emoji: '🔵', word: 'Sky Blue', category: 'colors'),
-    SpellingItem(emoji: '🟢', word: 'Lime Green', category: 'colors'),
-    SpellingItem(emoji: '🟦', word: 'Cyan', category: 'colors'),
-    SpellingItem(emoji: '🟥', word: 'Magenta', category: 'colors'),
-    SpellingItem(emoji: '🟨', word: 'Gold', category: 'colors'),
-    SpellingItem(emoji: '🟩', word: 'Mint', category: 'colors'),
-    SpellingItem(emoji: '🟧', word: 'Coral', category: 'colors'),
-    SpellingItem(emoji: '⬛', word: 'Jet Black', category: 'colors'),
-    SpellingItem(emoji: '⬜', word: 'Snow', category: 'colors'),
-    SpellingItem(emoji: '🟫', word: 'Tan', category: 'colors'),
-    SpellingItem(emoji: '🟨', word: 'Mustard', category: 'colors'),
-    SpellingItem(emoji: '🟪', word: 'Lavender', category: 'colors'),
-    SpellingItem(emoji: '🟩', word: 'Forest Green', category: 'colors'),
-    SpellingItem(emoji: '🟧', word: 'Peach', category: 'colors'),
-    SpellingItem(emoji: '🟥', word: 'Rose', category: 'colors'),
-    SpellingItem(emoji: '🟨', word: 'Lemon Yellow', category: 'colors'),
-    SpellingItem(emoji: '🟪', word: 'Indigo', category: 'colors'),
-    SpellingItem(emoji: '🟦', word: 'Teal', category: 'colors'),
-    SpellingItem(emoji: '⬜', word: 'Ivory', category: 'colors'),
-    SpellingItem(emoji: '⬛', word: 'Midnight', category: 'colors'),
-    SpellingItem(emoji: '🟩', word: 'Emerald', category: 'colors'),
-    SpellingItem(emoji: '🟦', word: 'Turquoise', category: 'colors'),
-    SpellingItem(emoji: '🟥', word: 'Crimson', category: 'colors'),
-    SpellingItem(emoji: '🟫', word: 'Coffee', category: 'colors'),
-    SpellingItem(emoji: '🟧', word: 'Amber', category: 'colors'),
-    SpellingItem(emoji: '🟨', word: 'Canary', category: 'colors'),
-    SpellingItem(emoji: '🟪', word: 'Plum', category: 'colors'),
-    SpellingItem(emoji: '🟦', word: 'Azure', category: 'colors'),
-    SpellingItem(emoji: '🟩', word: 'Jade', category: 'colors'),
-    SpellingItem(emoji: '⬛', word: 'Slate', category: 'colors'),
-    SpellingItem(emoji: '⬜', word: 'Pearl', category: 'colors'),
-    SpellingItem(emoji: '🟧', word: 'Apricot', category: 'colors'),
-    SpellingItem(emoji: '🟨', word: 'Butter', category: 'colors'),
+    // Sea animals
+    SpellingItem(
+        emoji: '🐟',
+        nameKey: 'spelling.seaAnimals.names.fish',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐬',
+        nameKey: 'spelling.seaAnimals.names.dolphin',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐳',
+        nameKey: 'spelling.seaAnimals.names.whale',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦈',
+        nameKey: 'spelling.seaAnimals.names.shark',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐙',
+        nameKey: 'spelling.seaAnimals.names.octopus',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦀',
+        nameKey: 'spelling.seaAnimals.names.crab',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦞',
+        nameKey: 'spelling.seaAnimals.names.lobster',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐡',
+        nameKey: 'spelling.seaAnimals.names.pufferfish',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦭',
+        nameKey: 'spelling.seaAnimals.names.seal',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐠',
+        nameKey: 'spelling.seaAnimals.names.tropicalFish',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐚',
+        nameKey: 'spelling.seaAnimals.names.seashell',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🐢',
+        nameKey: 'spelling.seaAnimals.names.seaTurtle',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦐',
+        nameKey: 'spelling.seaAnimals.names.shrimp',
+        category: 'seaAnimals'),
+    SpellingItem(
+        emoji: '🦑',
+        nameKey: 'spelling.seaAnimals.names.squid',
+        category: 'seaAnimals'),
 
-    // Body (50)
-    SpellingItem(emoji: '👀', word: 'Eyes', category: 'body'),
-    SpellingItem(emoji: '👂', word: 'Ear', category: 'body'),
-    SpellingItem(emoji: '👃', word: 'Nose', category: 'body'),
-    SpellingItem(emoji: '👄', word: 'Mouth', category: 'body'),
-    SpellingItem(emoji: '👋', word: 'Hand', category: 'body'),
-    SpellingItem(emoji: '🦶', word: 'Foot', category: 'body'),
-    SpellingItem(emoji: '🧠', word: 'Brain', category: 'body'),
-    SpellingItem(emoji: '🦷', word: 'Tooth', category: 'body'),
-    SpellingItem(emoji: '🦴', word: 'Bone', category: 'body'),
-    SpellingItem(emoji: '👁️', word: 'Eye', category: 'body'),
-    SpellingItem(emoji: '🫦', word: 'Lips', category: 'body'),
-    SpellingItem(emoji: '🫀', word: 'Heart', category: 'body'),
-    SpellingItem(emoji: '🫁', word: 'Lungs', category: 'body'),
-    SpellingItem(emoji: '💪', word: 'Arm', category: 'body'),
-    SpellingItem(emoji: '🦵', word: 'Leg', category: 'body'),
-    SpellingItem(emoji: '🦿', word: 'Knee', category: 'body'),
-    SpellingItem(emoji: '🖐️', word: 'Palm', category: 'body'),
-    SpellingItem(emoji: '🤚', word: 'Fingers', category: 'body'),
-    SpellingItem(emoji: '🦶', word: 'Heel', category: 'body'),
-    SpellingItem(emoji: '🦵', word: 'Thigh', category: 'body'),
-    SpellingItem(emoji: '🦵', word: 'Shin', category: 'body'),
-    SpellingItem(emoji: '🦾', word: 'Muscle', category: 'body'),
-    SpellingItem(emoji: '🫀', word: 'Vein', category: 'body'),
-    SpellingItem(emoji: '🧠', word: 'Mind', category: 'body'),
-    SpellingItem(emoji: '👅', word: 'Tongue', category: 'body'),
-    SpellingItem(emoji: '👂', word: 'Earlobe', category: 'body'),
-    SpellingItem(emoji: '👃', word: 'Nostril', category: 'body'),
-    SpellingItem(emoji: '🦷', word: 'Molar', category: 'body'),
-    SpellingItem(emoji: '🦴', word: 'Rib', category: 'body'),
-    SpellingItem(emoji: '🦴', word: 'Skull', category: 'body'),
-    SpellingItem(emoji: '🧠', word: 'Memory', category: 'body'),
-    SpellingItem(emoji: '🦻', word: 'Hearing', category: 'body'),
-    SpellingItem(emoji: '👀', word: 'Sight', category: 'body'),
-    SpellingItem(emoji: '🦶', word: 'Toe', category: 'body'),
-    SpellingItem(emoji: '👋', word: 'Thumb', category: 'body'),
-    SpellingItem(emoji: '👋', word: 'Wrist', category: 'body'),
-    SpellingItem(emoji: '💪', word: 'Elbow', category: 'body'),
-    SpellingItem(emoji: '🧠', word: 'Thought', category: 'body'),
-    SpellingItem(emoji: '🫦', word: 'Smile', category: 'body'),
-    SpellingItem(emoji: '🫦', word: 'Frown', category: 'body'),
-    SpellingItem(emoji: '👁️', word: 'Blink', category: 'body'),
-    SpellingItem(emoji: '👃', word: 'Smell', category: 'body'),
-    SpellingItem(emoji: '👄', word: 'Voice', category: 'body'),
-    SpellingItem(emoji: '🧠', word: 'Brain Cell', category: 'body'),
-    SpellingItem(emoji: '🦴', word: 'Spine', category: 'body'),
-    SpellingItem(emoji: '🦶', word: 'Ankle', category: 'body'),
-    SpellingItem(emoji: '🦵', word: 'Calf', category: 'body'),
-    SpellingItem(emoji: '👋', word: 'Knuckle', category: 'body'),
+    // Fruits
+    SpellingItem(
+        emoji: '🍎',
+        nameKey: 'spelling.fruits.names.apple',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍌',
+        nameKey: 'spelling.fruits.names.banana',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍏',
+        nameKey: 'spelling.fruits.names.greenApple',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍇',
+        nameKey: 'spelling.fruits.names.grapes',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍊',
+        nameKey: 'spelling.fruits.names.orange',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍋',
+        nameKey: 'spelling.fruits.names.lemon',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍉',
+        nameKey: 'spelling.fruits.names.watermelon',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍓',
+        nameKey: 'spelling.fruits.names.strawberry',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍒',
+        nameKey: 'spelling.fruits.names.cherry',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍑',
+        nameKey: 'spelling.fruits.names.peach',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🥭',
+        nameKey: 'spelling.fruits.names.mango',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🍍',
+        nameKey: 'spelling.fruits.names.pineapple',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🥥',
+        nameKey: 'spelling.fruits.names.coconut',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🥝', nameKey: 'spelling.fruits.names.kiwi', category: 'fruits'),
+    SpellingItem(
+        emoji: '🍐', nameKey: 'spelling.fruits.names.pear', category: 'fruits'),
+    SpellingItem(
+        emoji: '🍈',
+        nameKey: 'spelling.fruits.names.melon',
+        category: 'fruits'),
+    SpellingItem(
+        emoji: '🥑',
+        nameKey: 'spelling.fruits.names.avocado',
+        category: 'fruits'),
 
-    // Nature (50)
-    SpellingItem(emoji: '🌳', word: 'Tree', category: 'nature'),
-    SpellingItem(emoji: '🌞', word: 'Sun', category: 'nature'),
-    SpellingItem(emoji: '🌧️', word: 'Rain', category: 'nature'),
-    SpellingItem(emoji: '🌈', word: 'Rainbow', category: 'nature'),
-    SpellingItem(emoji: '🌊', word: 'Ocean', category: 'nature'),
-    SpellingItem(emoji: '⛰️', word: 'Mountain', category: 'nature'),
-    SpellingItem(emoji: '🌸', word: 'Flower', category: 'nature'),
-    SpellingItem(emoji: '🌙', word: 'Moon', category: 'nature'),
-    SpellingItem(emoji: '⛅', word: 'Cloud', category: 'nature'),
-    SpellingItem(emoji: '🌪️', word: 'Storm', category: 'nature'),
-    SpellingItem(emoji: '🌻', word: 'Sunflower', category: 'nature'),
-    SpellingItem(emoji: '🍂', word: 'Leaf', category: 'nature'),
-    SpellingItem(emoji: '🌱', word: 'Plant', category: 'nature'),
-    SpellingItem(emoji: '🌵', word: 'Cactus', category: 'nature'),
-    SpellingItem(emoji: '🏞️', word: 'Valley', category: 'nature'),
-    SpellingItem(emoji: '🏜️', word: 'Desert', category: 'nature'),
-    SpellingItem(emoji: '🏕️', word: 'Camp', category: 'nature'),
-    SpellingItem(emoji: '🌋', word: 'Volcano', category: 'nature'),
-    SpellingItem(emoji: '🏖️', word: 'Beach', category: 'nature'),
-    SpellingItem(emoji: '🏝️', word: 'Island', category: 'nature'),
-    SpellingItem(emoji: '🌾', word: 'Grass', category: 'nature'),
-    SpellingItem(emoji: '🌿', word: 'Herb', category: 'nature'),
-    SpellingItem(emoji: '🍁', word: 'Maple', category: 'nature'),
-    SpellingItem(emoji: '🌲', word: 'Pine', category: 'nature'),
-    SpellingItem(emoji: '🌴', word: 'Palm', category: 'nature'),
-    SpellingItem(emoji: '🍃', word: 'Breeze', category: 'nature'),
-    SpellingItem(emoji: '🌧️', word: 'Drizzle', category: 'nature'),
-    SpellingItem(emoji: '❄️', word: 'Snow', category: 'nature'),
-    SpellingItem(emoji: '☃️', word: 'Snowman', category: 'nature'),
-    SpellingItem(emoji: '🌬️', word: 'Wind', category: 'nature'),
-    SpellingItem(emoji: '🌤️', word: 'Sunrise', category: 'nature'),
-    SpellingItem(emoji: '🌇', word: 'Sunset', category: 'nature'),
-    SpellingItem(emoji: '🌌', word: 'Sky', category: 'nature'),
-    SpellingItem(emoji: '⭐', word: 'Star', category: 'nature'),
-    SpellingItem(emoji: '🌟', word: 'Starlight', category: 'nature'),
-    SpellingItem(emoji: '🌍', word: 'Earth', category: 'nature'),
-    SpellingItem(emoji: '🌕', word: 'Full Moon', category: 'nature'),
-    SpellingItem(emoji: '🌑', word: 'New Moon', category: 'nature'),
-    SpellingItem(emoji: '🌒', word: 'Crescent', category: 'nature'),
-    SpellingItem(emoji: '🌊', word: 'Wave', category: 'nature'),
-    SpellingItem(emoji: '💧', word: 'Drop', category: 'nature'),
-    SpellingItem(emoji: '🔥', word: 'Fire', category: 'nature'),
-    SpellingItem(emoji: '🌫️', word: 'Fog', category: 'nature'),
-    SpellingItem(emoji: '🌩️', word: 'Lightning', category: 'nature'),
-    SpellingItem(emoji: '🌦️', word: 'Shower', category: 'nature'),
-    SpellingItem(emoji: '🌊', word: 'River', category: 'nature'),
-    SpellingItem(emoji: '🏔️', word: 'Peak', category: 'nature'),
-    SpellingItem(emoji: '🌳', word: 'Forest', category: 'nature'),
-    SpellingItem(emoji: '🌻', word: 'Garden', category: 'nature'),
+    // Vegetables
+    SpellingItem(
+        emoji: '🥕',
+        nameKey: 'spelling.vegetables.names.carrot',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🥔',
+        nameKey: 'spelling.vegetables.names.potato',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🧅',
+        nameKey: 'spelling.vegetables.names.onion',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🧄',
+        nameKey: 'spelling.vegetables.names.garlic',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🥦',
+        nameKey: 'spelling.vegetables.names.broccoli',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🥬',
+        nameKey: 'spelling.vegetables.names.lettuce',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🥒',
+        nameKey: 'spelling.vegetables.names.cucumber',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🌽',
+        nameKey: 'spelling.vegetables.names.corn',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🎃',
+        nameKey: 'spelling.vegetables.names.pumpkin',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🍆',
+        nameKey: 'spelling.vegetables.names.eggplant',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🍄',
+        nameKey: 'spelling.vegetables.names.mushroom',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🌶️',
+        nameKey: 'spelling.vegetables.names.chili',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🥜',
+        nameKey: 'spelling.vegetables.names.peanut',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🍅',
+        nameKey: 'spelling.vegetables.names.tomato',
+        category: 'vegetables'),
+    SpellingItem(
+        emoji: '🍠',
+        nameKey: 'spelling.vegetables.names.sweetPotato',
+        category: 'vegetables'),
+
+    // Flowers
+    SpellingItem(
+        emoji: '🌹',
+        nameKey: 'spelling.flowers.names.rose',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🌷',
+        nameKey: 'spelling.flowers.names.tulip',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🌼',
+        nameKey: 'spelling.flowers.names.daisy',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🌻',
+        nameKey: 'spelling.flowers.names.sunflower',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🌸',
+        nameKey: 'spelling.flowers.names.blossom',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🌺',
+        nameKey: 'spelling.flowers.names.hibiscus',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '🥀',
+        nameKey: 'spelling.flowers.names.dryFlower',
+        category: 'flowers'),
+    SpellingItem(
+        emoji: '💐',
+        nameKey: 'spelling.flowers.names.bouquet',
+        category: 'flowers'),
+
+    // Earth & nature
+    SpellingItem(
+        emoji: '🌍',
+        nameKey: 'spelling.nature.names.earth',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏔️',
+        nameKey: 'spelling.nature.names.snowMountain',
+        category: 'nature'),
+
+    SpellingItem(
+        emoji: '⛰️',
+        nameKey: 'spelling.nature.names.mountain',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🌳', nameKey: 'spelling.nature.names.tree', category: 'nature'),
+    SpellingItem(
+        emoji: '🌋',
+        nameKey: 'spelling.nature.names.volcano',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏜️',
+        nameKey: 'spelling.nature.names.desert',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏝️',
+        nameKey: 'spelling.nature.names.island',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏖️',
+        nameKey: 'spelling.nature.names.beach',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏞️',
+        nameKey: 'spelling.nature.names.valley',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🪨', nameKey: 'spelling.nature.names.rock', category: 'nature'),
+    SpellingItem(
+        emoji: '🪵', nameKey: 'spelling.nature.names.wood', category: 'nature'),
+    SpellingItem(
+        emoji: '🍃', nameKey: 'spelling.nature.names.leaf', category: 'nature'),
+
+    SpellingItem(
+        emoji: '🌿', nameKey: 'spelling.nature.names.herb', category: 'nature'),
+    SpellingItem(
+        emoji: '🌾',
+        nameKey: 'spelling.nature.names.wheatField',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🌱',
+        nameKey: 'spelling.nature.names.seedling',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🪴',
+        nameKey: 'spelling.nature.names.plant',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🌉',
+        nameKey: 'spelling.nature.names.bridge',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🏕️',
+        nameKey: 'spelling.nature.names.camping',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🛖', nameKey: 'spelling.nature.names.hut', category: 'nature'),
+    SpellingItem(
+        emoji: '⛺', nameKey: 'spelling.nature.names.tent', category: 'nature'),
+    SpellingItem(
+        emoji: '🗻',
+        nameKey: 'spelling.nature.names.mountFuji',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '☀️', nameKey: 'spelling.nature.names.sun', category: 'nature'),
+    SpellingItem(
+        emoji: '🌙', nameKey: 'spelling.nature.names.moon', category: 'nature'),
+    SpellingItem(
+        emoji: '⭐', nameKey: 'spelling.nature.names.star', category: 'nature'),
+    SpellingItem(
+        emoji: '🪐',
+        nameKey: 'spelling.nature.names.saturn',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '💫',
+        nameKey: 'spelling.nature.names.sparkle',
+        category: 'nature'),
+    SpellingItem(
+        emoji: '🌌',
+        nameKey: 'spelling.nature.names.nightSky',
+        category: 'nature'),
   ];
 
   static List<SpellingItem> byCategory(String category) {
@@ -285,4 +574,3 @@ class SpellingData {
         .toList();
   }
 }
-

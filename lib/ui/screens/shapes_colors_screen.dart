@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import '../../core/app_colors.dart';
 import '../../core/app_text_styles.dart';
 import '../../data/shapes_colors_data.dart';
-import '../../utils/haptic_feedback.dart';
+import '../../utils/learning_detail_content.dart';
 import '../../utils/responsive.dart';
-import '../../utils/app_speech.dart';
+import '../models/learning_detail_page.dart';
+import '../widgets/kid_module_scaffold.dart';
+import '../widgets/kid_pill_selector.dart';
+import '../widgets/kid_section_header.dart';
+import 'kid_learning_detail_screen.dart';
 
-/// Screen that shows both Shapes and Colors with a simple toggle.
 class ShapesColorsScreen extends StatefulWidget {
   const ShapesColorsScreen({super.key});
 
@@ -17,363 +20,236 @@ class ShapesColorsScreen extends StatefulWidget {
 }
 
 class _ShapesColorsScreenState extends State<ShapesColorsScreen> {
-  String _tab = 'shapes'; // 'shapes' or 'colors'
-
-  String _localizedShapeName(String englishName) {
-    final key =
-        'shapes.name.${englishName.toLowerCase().replaceAll(' ', '_')}';
-    final translated = key.tr();
-    return translated == key ? englishName : translated;
-  }
-
-  String _localizedColorName(String englishName) {
-    final key =
-        'colors.name.${englishName.toLowerCase().replaceAll(' ', '_')}';
-    final translated = key.tr();
-    return translated == key ? englishName : translated;
-  }
+  String _tab = 'shapes';
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final pad = responsive.horizontalPadding;
+    final top = responsive.verticalPadding;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFFF3D0).withValues(alpha: 0.95),
-        elevation: 4,
-        shadowColor: Colors.orange.withValues(alpha: 0.2),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.primary),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'shapesColorsHeader'.tr(),
-          style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
-        ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.horizontalPadding,
-            vertical: responsive.verticalPadding,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'shapesColorsHeader'.tr(),
-                style: AppTextStyles.heading1.copyWith(
-                  fontSize:
-                      (responsive.width * 0.07).clamp(22.0, 30.0),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _tab == 'shapes'
-                    ? 'shapesTapShape'.tr()
-                    : 'shapesTapColor'.tr(),
-                style: AppTextStyles.body,
-              ),
-              const SizedBox(height: 16),
-              _buildTabs(),
-              const SizedBox(height: 20),
-              Expanded(
-                child: _tab == 'shapes'
-                    ? _buildShapesGrid(responsive)
-                    : _buildColorsGrid(responsive),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    final crossAxisCount = responsive.moduleGridCrossAxisCount;
+    final isShapes = _tab == 'shapes';
+    final itemCount = isShapes
+        ? ShapesColorsData.shapes.length
+        : ShapesColorsData.colors.length;
 
-  Widget _buildTabs() {
-    return Row(
-      children: [
-        _buildTabButton('shapes', '⬛ ${'shapes.tabShapes'.tr()}'),
-        const SizedBox(width: 8),
-        _buildTabButton('colors', '🎨 ${'shapes.tabColors'.tr()}'),
-      ],
-    );
-  }
-
-  Widget _buildTabButton(String tab, String label) {
-    final isSelected = _tab == tab;
-    final color =
-        tab == 'shapes' ? AppColors.secondary : AppColors.getLetterColor(2);
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          if (_tab == tab) return;
-          AppHapticFeedback.light();
-          setState(() => _tab = tab);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? color : Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: color.withValues(alpha: 0.7),
-              width: 2,
+    return KidModuleScaffold(
+      title: 'shapes.header'.tr(),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(pad, top, pad, top + 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            KidSectionHeader(
+              emoji: isShapes ? '⬛' : '🎨',
+              title: 'shapes.header'.tr(),
+              subtitle: isShapes
+                  ? 'shapes.tapShape'.tr()
+                  : 'shapes.tapColor'.tr(),
             ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: AppTextStyles.bodyBold.copyWith(
-                color: isSelected ? Colors.white : color,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShapesGrid(Responsive responsive) {
-    final shapes = ShapesColorsData.shapes;
-    final crossAxisCount = responsive.gridCrossAxisCount.clamp(2, 4);
-
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: responsive.gridSpacing,
-        mainAxisSpacing: responsive.gridSpacing,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: shapes.length,
-      itemBuilder: (context, index) {
-        final item = shapes[index];
-        final color = AppColors.getLetterColor(index);
-        final localizedName = _localizedShapeName(item.name);
-
-        return GestureDetector(
-          onTap: () => _showSimpleNameDialog(
-            title: localizedName,
-            emoji: item.emoji,
-            color: color,
-            message: 'shapes.shapeMessage'
-                .tr(namedArgs: {'name': localizedName}),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: color.withValues(alpha: 0.4),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
+            const SizedBox(height: 14),
+            KidPillSelector(
+              labels: [
+                '⬛ ${'shapes.tabShapes'.tr()}',
+                '🎨 ${'shapes.tabColors'.tr()}',
               ],
+              selectedIndex: isShapes ? 0 : 1,
+              onSelected: (index) =>
+                  setState(() => _tab = index == 0 ? 'shapes' : 'colors'),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      item.emoji,
-                      style: const TextStyle(fontSize: 40),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      localizedName,
-                      style: AppTextStyles.bodyBold,
-                    ),
-                  ],
-                ),
+            const SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: responsive.gridSpacing,
+                mainAxisSpacing: responsive.gridSpacing,
+                childAspectRatio: 1.0,
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                if (isShapes) {
+                  final item = ShapesColorsData.shapes[index];
+                  final color = AppColors.getLetterColor(index);
+                  final localizedName = item.nameKey.tr();
 
-  Widget _buildColorsGrid(Responsive responsive) {
-    final colors = ShapesColorsData.colors;
-    final crossAxisCount = responsive.gridCrossAxisCount.clamp(2, 4);
-
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: responsive.gridSpacing,
-        mainAxisSpacing: responsive.gridSpacing,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: colors.length,
-      itemBuilder: (context, index) {
-        final item = colors[index];
-        final localizedName = _localizedColorName(item.name);
-
-        return GestureDetector(
-          onTap: () => _showSimpleNameDialog(
-            title: localizedName,
-            emoji: '🎨',
-            color: item.color,
-            message: 'shapes.colorMessage'
-                .tr(namedArgs: {'name': localizedName}),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: item.color.withValues(alpha: 0.7),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: item.color.withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(6),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
+                  return GestureDetector(
+                    onTap: () => _openShapeDetail(context, index),
+                    child: Container(
                       decoration: BoxDecoration(
-                        color: item.color,
-                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white,
-                          width: 3,
+                          color: color.withValues(alpha: 0.4),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.25),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                item.emoji,
+                                style: const TextStyle(fontSize: 55),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                localizedName,
+                                style: AppTextStyles.bodyBold,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      localizedName,
-                      style: AppTextStyles.bodyBold,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+                  );
+                }
 
-  void _showSimpleNameDialog({
-    required String title,
-    required String emoji,
-    required Color color,
-    required String message,
-  }) {
-    AppHapticFeedback.medium();
+                final item = ShapesColorsData.colors[index];
+                final localizedName = item.nameKey.tr();
+                final accentColor = AppColors.getLetterColor(index);
 
-    // Speak the title (shape or color name) when dialog opens.
-    AppSpeech.speak(context, title);
-
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        final responsive = context.responsive;
-        final maxWidth = responsive.width * 0.9;
-        final maxHeight = responsive.height * 0.8;
-        final emojiFontSize =
-            (responsive.width * 0.12).clamp(36.0, 64.0); // responsive size
-
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: maxWidth,
-              maxHeight: maxHeight,
-            ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        color.withValues(alpha: 0.15),
-                        Colors.white,
+                return GestureDetector(
+                  onTap: () => _openColorDetail(context, index),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: accentColor.withValues(alpha: 0.4),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accentColor.withValues(alpha: 0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.4),
-                      width: 3,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: Text(
-                                title,
-                                style: AppTextStyles.heading3
-                                    .copyWith(color: color),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                            Container(
+                              width: 70,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                color: item.color,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: item.color.computeLuminance() > 0.85
+                                      ? Colors.grey.shade400
+                                      : Colors.white,
+                                  width: 3,
+                                ),
                               ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close),
-                              color: AppColors.textSecondary,
-                              onPressed: () => Navigator.of(context).pop(),
+                            const SizedBox(height: 8),
+                            Text(
+                              localizedName,
+                              style: AppTextStyles.bodyBold,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          emoji,
-                          style: TextStyle(fontSize: emojiFontSize),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          message,
-                          style: AppTextStyles.body.copyWith(fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openShapeDetail(BuildContext context, int index) {
+    final pages = ShapesColorsData.shapes.map((item) {
+      final name = item.nameKey.tr();
+      final id = item.nameKey.split('.').last;
+      final base = LearningDetailContent.wordLabel(
+        label: name,
+        module: 'shapes',
+        itemId: id,
+        emoji: item.emoji,
+      );
+      final fallbackAbout =
+          'shapes.shapeMessage'.tr(namedArgs: {'name': name});
+      return LearningDetailPage(
+        emoji: item.emoji,
+        title: base.title,
+        speakText: name,
+        about: base.about.isNotEmpty ? base.about : fallbackAbout,
+        funFact: base.funFact,
+        tryThis: base.tryThis,
+      );
+    }).toList();
+
+    final colors = List.generate(
+      ShapesColorsData.shapes.length,
+      (i) => AppColors.getLetterColor(i),
+    );
+
+    KidLearningDetailScreen.open(
+      context,
+      moduleTitle: 'shapes.header'.tr(),
+      initialIndex: index,
+      pages: pages,
+      accentColors: colors,
+    );
+  }
+
+  void _openColorDetail(BuildContext context, int index) {
+    final pages = ShapesColorsData.colors.map((item) {
+      final name = item.nameKey.tr();
+      final id = item.nameKey.split('.').last;
+      final base = LearningDetailContent.wordLabel(
+        label: name,
+        module: 'shapes',
+        itemId: id,
+        emoji: '🎨',
+      );
+      final fallbackAbout =
+          'shapes.colorMessage'.tr(namedArgs: {'name': name});
+      return LearningDetailPage(
+        title: base.title,
+        speakText: name,
+        about: base.about.isNotEmpty ? base.about : fallbackAbout,
+        funFact: base.funFact,
+        tryThis: base.tryThis,
+        hero: LearningDetailContent.colorHero(item.color),
+      );
+    }).toList();
+
+    final colors = List.generate(
+      ShapesColorsData.colors.length,
+      (i) => AppColors.getLetterColor(i),
+    );
+
+    KidLearningDetailScreen.open(
+      context,
+      moduleTitle: 'shapes.header'.tr(),
+      initialIndex: index,
+      pages: pages,
+      accentColors: colors,
     );
   }
 }
-

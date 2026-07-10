@@ -6,7 +6,6 @@ import '../../core/app_colors.dart';
 import '../../core/app_assets.dart';
 import 'home_screen.dart';
 
-/// Animated splash screen with app logo and optional Flame effects
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -43,11 +42,9 @@ class _SplashScreenState extends State<SplashScreen>
         curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
       ),
     );
-
     // Start animation
     _controller.forward();
 
-    // Navigate to home after delay
     async.Timer(const Duration(milliseconds: 1600), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
