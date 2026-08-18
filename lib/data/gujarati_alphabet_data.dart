@@ -461,28 +461,4 @@ class GujaratiAlphabetData {
       category: GujaratiLetterCategory.kakko,
     ),
   ];
-
-  static int get swarCount => swar.length;
-
-  static int get kakkoCount => kakko.length;
-
-  static GujaratiLetterItem getSwar(int index) {
-    if (index >= 0 && index < swar.length) return swar[index];
-    return swar.first;
-  }
-
-  static GujaratiLetterItem getKakko(int index) {
-    if (index >= 0 && index < kakko.length) return kakko[index];
-    return kakko.first;
-  }
-
-  static GujaratiLetterItem? findById(String id) {
-    for (final item in swar) {
-      if (item.id == id) return item;
-    }
-    for (final item in kakko) {
-      if (item.id == id) return item;
-    }
-    return null;
-  }
 }

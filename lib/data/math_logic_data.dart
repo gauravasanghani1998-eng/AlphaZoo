@@ -262,14 +262,22 @@ class MathLogicData {
   };
 
   static int questionCountFor(MathActivityId activityId) =>
-      _questionsPerActivity[activityId] ?? 15;
+      _questionsPerActivity[activityId]!;
 
-  static final Map<MathActivityId, List<MathActivityRound>> _sessionCache = {};
-  static final Map<String, List<MathActivityRound>> _localeSessionCache = {};
+  /// Fingerprints from recent opens — avoid repeats for ~5 sessions.
+  static final Map<String, List<String>> _recentFingerprints = {};
+  static final Map<String, int> _openCounts = {};
+  static const int _rememberSessionCount = 5;
 
   static bool _isLocaleDependent(MathActivityId activityId) {
     return activityId == MathActivityId.arrangeKakko ||
         activityId == MathActivityId.arrangeMonths;
+  }
+
+  static String _sessionKey(MathActivityId activityId, String languageCode) {
+    return _isLocaleDependent(activityId)
+        ? '${activityId.name}_$languageCode'
+        : activityId.name;
   }
 
   static const _fruits = ['🍎', '🍌', '🍊', '🍇', '🍓'];
@@ -493,56 +501,139 @@ class MathLogicData {
     MathActivityId activityId, {
     String languageCode = 'en',
   }) {
-    if (_isLocaleDependent(activityId)) {
-      final cacheKey = '${activityId.name}_$languageCode';
-      return _localeSessionCache.putIfAbsent(
-        cacheKey,
-        () => _buildSession(activityId, languageCode),
-      );
-    }
-    return _sessionCache.putIfAbsent(
-      activityId,
-      () => _buildSession(activityId, languageCode),
+    final key = _sessionKey(activityId, languageCode);
+    final open = _openCounts[key] ?? 0;
+    _openCounts[key] = open + 1;
+
+    // Fresh seed every open so kids never get the same frozen session.
+    final random = Random(
+      DateTime.now().microsecondsSinceEpoch ^
+          Object.hash(activityId.index, open, languageCode),
     );
+
+    final avoid = Set<String>.from(_recentFingerprints[key] ?? const []);
+    final session = _buildSession(activityId, languageCode, random, avoid);
+    _rememberFingerprints(key, activityId, session);
+    return session;
+  }
+
+  static void _rememberFingerprints(
+    String key,
+    MathActivityId activityId,
+    List<MathActivityRound> session,
+  ) {
+    final recent = _recentFingerprints.putIfAbsent(key, () => <String>[]);
+    for (final round in session) {
+      recent.add(_fingerprint(round));
+    }
+    final maxRemember = questionCountFor(activityId) * _rememberSessionCount;
+    if (recent.length > maxRemember) {
+      recent.removeRange(0, recent.length - maxRemember);
+    }
+  }
+
+  /// Identity of a question (ignores option shuffle) for no-repeat history.
+  static String _fingerprint(MathActivityRound round) {
+    switch (round.kind) {
+      case MathRoundKind.pickAnswer:
+        final p = round.pickAnswer!;
+        final args = p.instructionArgs?.entries
+                .map((e) => '${e.key}=${e.value}')
+                .join(',') ??
+            '';
+        final correct = (p.correctIndex >= 0 &&
+                p.correctIndex < p.optionLabels.length)
+            ? p.optionLabels[p.correctIndex]
+            : '';
+        return [
+          'pick',
+          p.instructionKey,
+          args,
+          p.emoji ?? '',
+          '${p.emojiCount ?? ''}',
+          p.textParts?.join('|') ?? '',
+          correct,
+        ].join('::');
+      case MathRoundKind.countTap:
+        final c = round.countTap!;
+        return 'tap::${c.emoji}::${c.count}';
+      case MathRoundKind.twoGroup:
+        final g = round.twoGroup!;
+        return 'grp::${g.emoji}::${g.leftCount}::${g.rightCount}';
+      case MathRoundKind.pictureMath:
+        final m = round.pictureMath!;
+        return 'pic::${m.emoji}::${m.groupA}::${m.groupB}::${m.isAddition}';
+      case MathRoundKind.pattern:
+        final p = round.pattern!;
+        return 'pat::${p.shown.join()}::${p.correct}';
+      case MathRoundKind.oddOneOut:
+        final o = round.oddOneOut!;
+        return 'odd::${o.items.join()}::${o.oddIndex}';
+    }
+  }
+
+  static MathActivityRound _uniqueRound(
+    Set<String> usedFingerprints,
+    MathActivityRound Function() build,
+  ) {
+    MathActivityRound? last;
+    for (var attempt = 0; attempt < 80; attempt++) {
+      final round = build();
+      last = round;
+      final fp = _fingerprint(round);
+      if (!usedFingerprints.contains(fp)) {
+        usedFingerprints.add(fp);
+        return round;
+      }
+    }
+    final round = last ?? build();
+    usedFingerprints.add(_fingerprint(round));
+    return round;
   }
 
   static List<MathActivityRound> _buildSession(
     MathActivityId activityId,
     String languageCode,
+    Random random,
+    Set<String> usedFingerprints,
   ) {
-    final seed = activityId.index * 10007 +
-        activityId.name.hashCode +
-        languageCode.hashCode;
-    final random = Random(seed);
     final total = questionCountFor(activityId);
     switch (activityId) {
       case MathActivityId.forwardCount:
-        return _buildForwardCountSession(random, total);
+        return _buildForwardCountSession(random, total, usedFingerprints);
       case MathActivityId.backwardCount:
-        return _buildBackwardCountSession(random, total);
+        return _buildBackwardCountSession(random, total, usedFingerprints);
       case MathActivityId.fillAddition:
-        return _buildFillAdditionSession(random, total);
+        return _buildFillAdditionSession(random, total, usedFingerprints);
       case MathActivityId.fillSubtraction:
-        return _buildFillSubtractionSession(random, total);
+        return _buildFillSubtractionSession(random, total, usedFingerprints);
       case MathActivityId.biggerNumber:
-        return _buildBiggerNumberSession(random, total);
+        return _buildBiggerNumberSession(random, total, usedFingerprints);
       case MathActivityId.smallerNumber:
-        return _buildSmallerNumberSession(random, total);
+        return _buildSmallerNumberSession(random, total, usedFingerprints);
       case MathActivityId.middleNumber:
-        return _buildMiddleNumberSession(random, total);
+        return _buildMiddleNumberSession(random, total, usedFingerprints);
       case MathActivityId.doubleIt:
-        return _buildDoubleItSession(random, total);
+        return _buildDoubleItSession(random, total, usedFingerprints);
       case MathActivityId.arrangeKakko:
-        return _buildArrangeKakkoSession(languageCode, total);
+        return _buildArrangeKakkoSession(
+          languageCode,
+          total,
+          random,
+          usedFingerprints,
+        );
       default:
         return List.generate(
           total,
-          (i) => _generateRound(
-            activityId,
-            random,
-            languageCode: languageCode,
-            roundIndex: i,
-            totalRounds: total,
+          (i) => _uniqueRound(
+            usedFingerprints,
+            () => _generateRound(
+              activityId,
+              random,
+              languageCode: languageCode,
+              roundIndex: i,
+              totalRounds: total,
+            ),
           ),
         );
     }
@@ -707,10 +798,11 @@ class MathLogicData {
   }
 
   static int _progressiveMax(int roundIndex, int totalRounds) {
-    if (roundIndex < 4) return 10;
-    final remaining = (totalRounds - 4).clamp(1, totalRounds);
-    final step = roundIndex - 3;
-    return (10 + ((100 - 10) * step / remaining)).round().clamp(10, 100);
+    // Ease in with small numbers, then use the full 1–100 range.
+    if (roundIndex < 3) return 15;
+    final remaining = (totalRounds - 3).clamp(1, totalRounds);
+    final step = roundIndex - 2;
+    return (15 + ((100 - 15) * step / remaining)).round().clamp(15, 100);
   }
 
   static PickAnswerRound randomMissingCount(
@@ -754,36 +846,68 @@ class MathLogicData {
   static List<MathActivityRound> _buildForwardCountSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <int>{};
     return List.generate(total, (i) {
       final maxNum = _progressiveMax(i, total);
       final maxN = (maxNum - 1).clamp(1, 99);
-      final available = <int>[
-        for (var v = 1; v <= maxN; v++)
-          if (!used.contains(v)) v,
-      ];
-      final n = available[random.nextInt(available.length)];
-      used.add(n);
-      return MathActivityRound.pick(_forwardCountForN(random, n, maxNum));
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        final available = <int>[
+          for (var v = 1; v <= maxN; v++)
+            if (!used.contains(v)) v,
+        ];
+        final pool = available.isNotEmpty
+            ? available
+            : [for (var v = 1; v <= maxN; v++) v];
+        final n = pool[random.nextInt(pool.length)];
+        final round =
+            MathActivityRound.pick(_forwardCountForN(random, n, maxNum));
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add(n);
+        usedFingerprints.add(fp);
+        return round;
+      }
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
   static List<MathActivityRound> _buildBackwardCountSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <int>{};
     return List.generate(total, (i) {
       final maxNum = _progressiveMax(i, total);
       final maxN = maxNum.clamp(2, 100);
-      final available = <int>[
-        for (var v = 2; v <= maxN; v++)
-          if (!used.contains(v)) v,
-      ];
-      final n = available[random.nextInt(available.length)];
-      used.add(n);
-      return MathActivityRound.pick(_backwardCountForN(random, n, maxNum));
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        final available = <int>[
+          for (var v = 2; v <= maxN; v++)
+            if (!used.contains(v)) v,
+        ];
+        final pool = available.isNotEmpty
+            ? available
+            : [for (var v = 2; v <= maxN; v++) v];
+        final n = pool[random.nextInt(pool.length)];
+        final round =
+            MathActivityRound.pick(_backwardCountForN(random, n, maxNum));
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add(n);
+        usedFingerprints.add(fp);
+        return round;
+      }
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
@@ -837,11 +961,13 @@ class MathLogicData {
     return _backwardCountForN(random, n, maxNum);
   }
 
+  /// Operand ceiling for add / sub / double-it — ramps toward 50
+  /// (double of 50 = 100; sums stay within 1–100).
   static int _progressiveOperandMax(int roundIndex, int totalRounds) {
-    if (roundIndex < 4) return 9;
-    final remaining = (totalRounds - 4).clamp(1, totalRounds);
-    final step = roundIndex - 3;
-    return (10 + ((20 - 10) * step / remaining)).round().clamp(10, 20);
+    if (roundIndex < 3) return 10;
+    final remaining = (totalRounds - 3).clamp(1, totalRounds);
+    final step = roundIndex - 2;
+    return (10 + ((50 - 10) * step / remaining)).round().clamp(10, 50);
   }
 
   static ({int a, int b}) _additionOperands(
@@ -850,8 +976,8 @@ class MathLogicData {
     int totalRounds,
   ) {
     final maxOp = _progressiveOperandMax(roundIndex, totalRounds);
-    const maxSum = 40;
-    final minSum = roundIndex < 4 ? 2 : (roundIndex < totalRounds ~/ 2 ? 6 : 10);
+    const maxSum = 100;
+    final minSum = roundIndex < 3 ? 2 : (roundIndex < totalRounds ~/ 2 ? 8 : 16);
 
     for (var attempt = 0; attempt < 60; attempt++) {
       final a = 1 + random.nextInt(maxOp);
@@ -865,7 +991,7 @@ class MathLogicData {
         return (a: a, b: b);
       }
     }
-    return (a: 12, b: 8);
+    return (a: 28, b: 17);
   }
 
   static ({int a, int b}) _subtractionOperands(
@@ -874,12 +1000,13 @@ class MathLogicData {
     int totalRounds,
   ) {
     final maxOp = _progressiveOperandMax(roundIndex, totalRounds);
-    const maxAnswer = 40;
-    final minAnswer = roundIndex < 4 ? 1 : (roundIndex < totalRounds ~/ 2 ? 3 : 5);
-    final maxA = min(35, maxOp + 10);
+    const maxAnswer = 100;
+    final minAnswer =
+        roundIndex < 3 ? 1 : (roundIndex < totalRounds ~/ 2 ? 4 : 8);
+    final maxA = min(100, maxOp + 50);
 
     for (var attempt = 0; attempt < 60; attempt++) {
-      final aMin = roundIndex < 4 ? 3 : 6;
+      final aMin = roundIndex < 3 ? 3 : 8;
       if (aMin > maxA) break;
       final a = aMin + random.nextInt(maxA - aMin + 1);
       final maxB = a - minAnswer;
@@ -890,52 +1017,76 @@ class MathLogicData {
         return (a: a, b: b);
       }
     }
-    return (a: 18, b: 5);
+    return (a: 64, b: 19);
   }
 
   static List<MathActivityRound> _buildFillAdditionSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <String>{};
     return List.generate(total, (i) {
-      var pair = _additionOperands(random, i, total);
-      var attempts = 0;
-      while (used.contains('${pair.a}_${pair.b}') && attempts < 80) {
-        pair = _additionOperands(random, i, total);
-        attempts++;
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        var pair = _additionOperands(random, i, total);
+        var pairTries = 0;
+        while (used.contains('${pair.a}_${pair.b}') && pairTries < 40) {
+          pair = _additionOperands(random, i, total);
+          pairTries++;
+        }
+        final round = MathActivityRound.pick(
+          _fillAdditionFor(random, pair.a, pair.b),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add('${pair.a}_${pair.b}');
+        usedFingerprints.add(fp);
+        return round;
       }
-      used.add('${pair.a}_${pair.b}');
-      return MathActivityRound.pick(
-        _fillAdditionFor(random, pair.a, pair.b),
-      );
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
   static List<MathActivityRound> _buildFillSubtractionSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <String>{};
     return List.generate(total, (i) {
-      var pair = _subtractionOperands(random, i, total);
-      var attempts = 0;
-      while (used.contains('${pair.a}_${pair.b}') && attempts < 80) {
-        pair = _subtractionOperands(random, i, total);
-        attempts++;
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        var pair = _subtractionOperands(random, i, total);
+        var pairTries = 0;
+        while (used.contains('${pair.a}_${pair.b}') && pairTries < 40) {
+          pair = _subtractionOperands(random, i, total);
+          pairTries++;
+        }
+        final round = MathActivityRound.pick(
+          _fillSubtractionFor(random, pair.a, pair.b),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add('${pair.a}_${pair.b}');
+        usedFingerprints.add(fp);
+        return round;
       }
-      used.add('${pair.a}_${pair.b}');
-      return MathActivityRound.pick(
-        _fillSubtractionFor(random, pair.a, pair.b),
-      );
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
   static PickAnswerRound _fillAdditionFor(Random random, int a, int b) {
     final sum = a + b;
     final spread = (sum / 5).round().clamp(2, 6);
-    final optMin = (sum - spread).clamp(2, 40);
-    final optMax = (sum + spread).clamp(2, 40);
+    final optMin = (sum - spread).clamp(2, 100);
+    final optMax = (sum + spread).clamp(2, 100);
     final options = _pickOptions(random, sum, optMin, optMax);
     return PickAnswerRound(
       instructionKey: 'mathLogic.activities.fillAddition.instruction',
@@ -948,8 +1099,8 @@ class MathLogicData {
   static PickAnswerRound _fillSubtractionFor(Random random, int a, int b) {
     final answer = a - b;
     final spread = (answer / 5).round().clamp(2, 6);
-    final optMin = (answer - spread).clamp(0, 40);
-    final optMax = (answer + spread).clamp(0, 40);
+    final optMin = (answer - spread).clamp(0, 100);
+    final optMax = (answer + spread).clamp(0, 100);
     final options = _pickOptions(random, answer, optMin, optMax);
     return PickAnswerRound(
       instructionKey: 'mathLogic.activities.fillSubtraction.instruction',
@@ -1093,38 +1244,62 @@ class MathLogicData {
   static List<MathActivityRound> _buildBiggerNumberSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <String>{};
     return List.generate(total, (i) {
-      var pair = _comparePair(random, i, total);
-      var attempts = 0;
-      while (used.contains('${pair.a}_${pair.b}') && attempts < 80) {
-        pair = _comparePair(random, i, total);
-        attempts++;
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        var pair = _comparePair(random, i, total);
+        var pairTries = 0;
+        while (used.contains('${pair.a}_${pair.b}') && pairTries < 40) {
+          pair = _comparePair(random, i, total);
+          pairTries++;
+        }
+        final round = MathActivityRound.pick(
+          _biggerNumberFor(random, pair.a, pair.b),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add('${pair.a}_${pair.b}');
+        usedFingerprints.add(fp);
+        return round;
       }
-      used.add('${pair.a}_${pair.b}');
-      return MathActivityRound.pick(
-        _biggerNumberFor(random, pair.a, pair.b),
-      );
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
   static List<MathActivityRound> _buildSmallerNumberSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <String>{};
     return List.generate(total, (i) {
-      var pair = _comparePair(random, i, total);
-      var attempts = 0;
-      while (used.contains('${pair.a}_${pair.b}') && attempts < 80) {
-        pair = _comparePair(random, i, total);
-        attempts++;
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        var pair = _comparePair(random, i, total);
+        var pairTries = 0;
+        while (used.contains('${pair.a}_${pair.b}') && pairTries < 40) {
+          pair = _comparePair(random, i, total);
+          pairTries++;
+        }
+        final round = MathActivityRound.pick(
+          _smallerNumberFor(random, pair.a, pair.b),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add('${pair.a}_${pair.b}');
+        usedFingerprints.add(fp);
+        return round;
       }
-      used.add('${pair.a}_${pair.b}');
-      return MathActivityRound.pick(
-        _smallerNumberFor(random, pair.a, pair.b),
-      );
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
@@ -1212,21 +1387,33 @@ class MathLogicData {
   static List<MathActivityRound> _buildMiddleNumberSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <String>{};
     return List.generate(total, (i) {
-      var triple = _middleNumberTriple(random, i, total);
-      var attempts = 0;
-      var key = ([triple.a, triple.b, triple.c]..sort()).join('_');
-      while (used.contains(key) && attempts < 80) {
-        triple = _middleNumberTriple(random, i, total);
-        key = ([triple.a, triple.b, triple.c]..sort()).join('_');
-        attempts++;
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        var triple = _middleNumberTriple(random, i, total);
+        var keyTries = 0;
+        var key = ([triple.a, triple.b, triple.c]..sort()).join('_');
+        while (used.contains(key) && keyTries < 40) {
+          triple = _middleNumberTriple(random, i, total);
+          key = ([triple.a, triple.b, triple.c]..sort()).join('_');
+          keyTries++;
+        }
+        final round = MathActivityRound.pick(
+          _middleNumberFor(random, triple.a, triple.b, triple.c),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add(key);
+        usedFingerprints.add(fp);
+        return round;
       }
-      used.add(key);
-      return MathActivityRound.pick(
-        _middleNumberFor(random, triple.a, triple.b, triple.c),
-      );
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
@@ -1252,19 +1439,34 @@ class MathLogicData {
   static List<MathActivityRound> _buildDoubleItSession(
     Random random,
     int total,
+    Set<String> usedFingerprints,
   ) {
     final used = <int>{};
     return List.generate(total, (i) {
       final maxNum = _progressiveOperandMax(i, total);
-      final available = <int>[
-        for (var v = 1; v <= maxNum; v++)
-          if (!used.contains(v)) v,
-      ];
-      final n = available[random.nextInt(available.length)];
-      used.add(n);
-      return MathActivityRound.pick(
-        _doubleItFor(random, n, _progressiveMax(i, total)),
-      );
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 80; attempt++) {
+        final available = <int>[
+          for (var v = 1; v <= maxNum; v++)
+            if (!used.contains(v)) v,
+        ];
+        final pool = available.isNotEmpty
+            ? available
+            : [for (var v = 1; v <= maxNum; v++) v];
+        final n = pool[random.nextInt(pool.length)];
+        final round = MathActivityRound.pick(
+          _doubleItFor(random, n, _progressiveMax(i, total)),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 70) continue;
+        used.add(n);
+        usedFingerprints.add(fp);
+        return round;
+      }
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
     });
   }
 
@@ -1301,10 +1503,11 @@ class MathLogicData {
     'ਸ਼', '਷', 'ਸ', 'ਹ', 'ਲ਼', 'ਕ੍ਸ਼', 'ਗਿਆ',
   ];
 
+  /// Tamil mei order (unique glyphs) for arrange-kakko quizzes.
   static const List<String> _tamilKakkoGlyphs = [
-    'க', 'க', 'க', 'க', 'ச', 'ச', 'ஜ', 'ஜ', 'ட', 'ட', 'ட', 'ட', 'ண',
-    'த', 'த', 'த', 'த', 'ந', 'ப', 'ப', 'ப', 'ப', 'ம', 'ய', 'ர', 'ல', 'வ',
-    'ஷ', 'ஷ', 'ஸ', 'ஹ', 'ள', 'க்ஷ', 'ஞ',
+    'க', 'ங', 'ச', 'ஞ', 'ட', 'ண', 'த', 'ந', 'ப', 'ம',
+    'ய', 'ர', 'ல', 'வ', 'ழ', 'ள', 'ற', 'ன',
+    'ஜ', 'ஷ', 'ஸ', 'ஹ', 'க்ஷ',
   ];
 
   static List<String> _canonicalKakkoGlyphsFor(String languageCode) {
@@ -1370,17 +1573,34 @@ class MathLogicData {
   static List<MathActivityRound> _buildArrangeKakkoSession(
     String languageCode,
     int total,
+    Random random,
+    Set<String> usedFingerprints,
   ) {
     final items = _canonicalKakkoGlyphsFor(languageCode);
-    return List.generate(
-      total,
-      (i) => MathActivityRound.pick(
-        _deterministicKakkoRound(
-          items: items,
-          roundIndex: i,
-        ),
-      ),
-    );
+    final order = List.generate(
+      max(total, _kakkoRoundTemplates.length),
+      (i) => i,
+    )..shuffle(random);
+    return List.generate(total, (i) {
+      MathActivityRound? last;
+      for (var attempt = 0; attempt < 40; attempt++) {
+        final roundIndex = order[(i + attempt) % order.length];
+        final round = MathActivityRound.pick(
+          _deterministicKakkoRound(
+            items: items,
+            roundIndex: roundIndex,
+          ),
+        );
+        last = round;
+        final fp = _fingerprint(round);
+        if (usedFingerprints.contains(fp) && attempt < 30) continue;
+        usedFingerprints.add(fp);
+        return round;
+      }
+      final round = last!;
+      usedFingerprints.add(_fingerprint(round));
+      return round;
+    });
   }
 
   static PickAnswerRound _deterministicKakkoRound({
@@ -1419,11 +1639,39 @@ class MathLogicData {
     }
     wrongOptions.remove(correct);
 
-    var options = <String>[correct, ...wrongOptions.take(2)];
+    // Always ensure 3 distinct options (Tamil short lists used to crash here).
+    final options = <String>[correct];
+    for (final w in wrongOptions) {
+      if (options.length >= 3) break;
+      if (!options.contains(w)) options.add(w);
+    }
+    for (final g in items) {
+      if (options.length >= 3) break;
+      if (!options.contains(g)) options.add(g);
+    }
+    while (options.length < 3) {
+      options.add(correct);
+    }
+
     if (roundIndex % 3 == 1) {
-      options = [options[1], options[0], options[2]];
-    } else if (roundIndex % 3 == 2) {
-      options = [options[2], options[0], options[1]];
+      final shuffled = [options[1], options[0], options[2]];
+      return PickAnswerRound(
+        instructionKey: 'mathLogic.activities.arrangeKakko.instruction',
+        textParts: parts,
+        blankIndex: blankIndex,
+        optionLabels: shuffled,
+        correctIndex: shuffled.indexOf(correct),
+      );
+    }
+    if (roundIndex % 3 == 2) {
+      final shuffled = [options[2], options[0], options[1]];
+      return PickAnswerRound(
+        instructionKey: 'mathLogic.activities.arrangeKakko.instruction',
+        textParts: parts,
+        blankIndex: blankIndex,
+        optionLabels: shuffled,
+        correctIndex: shuffled.indexOf(correct),
+      );
     }
 
     return PickAnswerRound(

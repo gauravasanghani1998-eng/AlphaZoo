@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
@@ -10,6 +11,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final title = 'legal.privacy.title'.tr();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -23,7 +25,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Privacy Policy',
+          title,
           style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
         ),
         centerTitle: true,
@@ -37,63 +39,35 @@ class PrivacyPolicyScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Privacy Policy',
-                style: AppTextStyles.heading1,
-              ),
+              Text(title, style: AppTextStyles.heading1),
               const SizedBox(height: 8),
               Text(
-                'Last updated: March 2026',
+                'legal.privacy.lastUpdated'.tr(),
                 style: AppTextStyles.caption,
               ),
               const SizedBox(height: 16),
-              Text(
-                'Kids Learning World is an offline educational app for kids that helps them learn the alphabet, numbers, spelling, shapes, colors and everyday words in a fun and safe way.',
-                style: AppTextStyles.body,
-              ),
+              Text('legal.privacy.intro'.tr(), style: AppTextStyles.body),
               const SizedBox(height: 16),
-              _sectionTitle('1. No personal data collection'),
-              _sectionBody(
-                'Kids Learning World does not collect, store or share any personal information from children or adults. '
-                'We do not ask you to create an account, log in, enter your name, email, phone number or any other identifying data.',
-              ),
+              _sectionTitle('legal.privacy.s1Title'.tr()),
+              _sectionBody('legal.privacy.s1Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('2. Offline use'),
-              _sectionBody(
-                'The app is designed to work completely offline. Learning content is stored locally on your device, '
-                'so no network connection is required for normal use.',
-              ),
+              _sectionTitle('legal.privacy.s2Title'.tr()),
+              _sectionBody('legal.privacy.s2Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('3. Permissions and device data'),
-              _sectionBody(
-                'Kids Learning World may use system text‑to‑speech (TTS) on your device to read words aloud. '
-                'This feature is handled by the operating system and we do not record or transmit any audio.\n\n'
-                'We do not access your contacts, photos, location, microphone recordings, or any other sensitive data.',
-              ),
+              _sectionTitle('legal.privacy.s3Title'.tr()),
+              _sectionBody('legal.privacy.s3Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('4. No ads or tracking'),
-              _sectionBody(
-                'The app does not contain third‑party advertising, analytics SDKs, or tracking technologies. '
-                'We do not use cookies or similar technologies to profile users.',
-              ),
+              _sectionTitle('legal.privacy.s4Title'.tr()),
+              _sectionBody('legal.privacy.s4Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('5. Children’s privacy'),
-              _sectionBody(
-                'Kids Learning World is built for young learners. We have intentionally minimized data use and avoided any features '
-                'that require children to share personal information. Parents and guardians are encouraged to supervise '
-                'device use and help children understand safe use of apps.',
-              ),
+              _sectionTitle('legal.privacy.s5Title'.tr()),
+              _sectionBody('legal.privacy.s5Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('6. Changes to this policy'),
-              _sectionBody(
-                'If we ever change how the app handles data, we will update this Privacy Policy inside the app and in the '
-                'store listing. Any material changes will be clearly communicated so you can review them before continuing to use the app.',
-              ),
+              _sectionTitle('legal.privacy.s6Title'.tr()),
+              _sectionBody('legal.privacy.s6Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('7. Contact'),
-              _sectionBody(
-                'If you have any questions about this Privacy Policy, you can contact the developer using the email address provided in the store listing.',
-              ),
+              _sectionTitle('legal.privacy.s7Title'.tr()),
+              _sectionBody('legal.privacy.s7Body'.tr()),
             ],
           ),
         ),
@@ -115,4 +89,3 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 }
-

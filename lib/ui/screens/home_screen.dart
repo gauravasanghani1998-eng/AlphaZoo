@@ -19,6 +19,7 @@ import 'emotions_screen.dart';
 import 'everyday_words_screen.dart';
 import 'family_screen.dart';
 import 'greetings_screen.dart';
+import 'letter_trace_screen.dart';
 import 'numbers_screen.dart';
 import 'opposites_screen.dart';
 import 'rhymes_screen.dart';
@@ -27,7 +28,13 @@ import 'spelling_screen.dart';
 import 'vehicles_screen.dart';
 import 'weather_seasons_screen.dart';
 import 'native_script_screen.dart';
+import 'indian_festivals_screen.dart';
 import 'math_logic_screen.dart';
+import 'good_habits_screen.dart';
+import 'community_helpers_screen.dart';
+import 'positions_directions_screen.dart';
+import 'puzzle_games_screen.dart';
+import 'stories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,6 +65,10 @@ class _HomeScreenState extends State<HomeScreen>
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
   bool _ttsWarmed = false;
+  Future<void>? _warmUpFuture;
+  Locale? _warmedLocale;
+  /// When true, the next route push keeps the module-name speech playing.
+  bool _keepSpeechThroughNextRoute = false;
   PageRoute<dynamic>? _route;
 
   @override
@@ -77,9 +88,11 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_ttsWarmed) {
+    final locale = context.locale;
+    if (!_ttsWarmed || _warmedLocale != locale) {
       _ttsWarmed = true;
-      AppSpeech.warmUp(context.locale);
+      _warmedLocale = locale;
+      _warmUpFuture = AppSpeech.warmUp(locale);
     }
     final route = ModalRoute.of(context);
     if (route is PageRoute<dynamic> && route != _route) {
@@ -104,6 +117,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void didPushNext() {
+    if (_keepSpeechThroughNextRoute) {
+      _keepSpeechThroughNextRoute = false;
+      return;
+    }
     AppSpeech.interruptPlayback();
   }
 
@@ -202,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ],
                         ).createShader(bounds),
                         child: Text(
-                          'Kids Learning World',
+                          'app.displayName'.tr(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.heading2.copyWith(
@@ -214,14 +231,12 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                     _HomeHeaderAction(
-                      tooltip: 'Language',
                       icon: Icons.language_rounded,
                       color: AppColors.primary,
                       onPressed: () => showKidLanguageSheet(context),
                     ),
                     const SizedBox(width: 6),
                     _HomeHeaderAction(
-                      tooltip: 'About',
                       icon: Icons.info_outline_rounded,
                       color: AppColors.secondary,
                       onPressed: () {
@@ -277,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen>
           imageAsset: m.imageAsset,
           title: m.title,
           color: m.color,
-          onTap: m.onTap,
+          onTap: () => _openModule(context, m),
         );
       },
     );
@@ -408,6 +423,55 @@ class _HomeScreenState extends State<HomeScreen>
         title: 'shortcuts.vehicles.title'.tr(),
         onTap: () => _open(context, const VehiclesScreen()),
       ),
+      _HomeModule(
+        emoji: '✍️',
+        imageAsset: _moduleImage('letter_trace'),
+        color: AppColors.getLetterColor(14),
+        title: 'shortcuts.letterTrace.title'.tr(),
+        onTap: () => _open(context, const LetterTraceScreen()),
+      ),
+      _HomeModule(
+        emoji: '🪔',
+        imageAsset: _moduleImage('indian_festivals'),
+        color: AppColors.getLetterColor(15),
+        title: 'shortcuts.indianFestivals.title'.tr(),
+        onTap: () => _open(context, const IndianFestivalsScreen()),
+      ),
+      _HomeModule(
+        emoji: '🧼',
+        imageAsset: _moduleImage('good_habits'),
+        color: AppColors.getLetterColor(16),
+        title: 'shortcuts.goodHabits.title'.tr(),
+        onTap: () => _open(context, const GoodHabitsScreen()),
+      ),
+      _HomeModule(
+        emoji: '🤝',
+        imageAsset: _moduleImage('community_helpers'),
+        color: AppColors.getLetterColor(19),
+        title: 'shortcuts.communityHelpers.title'.tr(),
+        onTap: () => _open(context, const CommunityHelpersScreen()),
+      ),
+      _HomeModule(
+        emoji: '🧭',
+        imageAsset: _moduleImage('directions'),
+        color: AppColors.getLetterColor(17),
+        title: 'shortcuts.positionsDirections.title'.tr(),
+        onTap: () => _open(context, const PositionsDirectionsScreen()),
+      ),
+      _HomeModule(
+        emoji: '📖',
+        imageAsset: _moduleImage('story'),
+        color: AppColors.getLetterColor(18),
+        title: 'shortcuts.stories.title'.tr(),
+        onTap: () => _open(context, const StoriesScreen()),
+      ),
+      _HomeModule(
+        emoji: '🧩',
+        imageAsset: _moduleImage('puzzle'),
+        color: AppColors.secondary,
+        title: 'shortcuts.puzzleGames.title'.tr(),
+        onTap: () => _open(context, const PuzzleGamesScreen()),
+      ),
     ];
   }
 
@@ -445,14 +509,41 @@ class _HomeScreenState extends State<HomeScreen>
         return 'assets/images/modules/opposites.png';
       case 'vehicles':
         return 'assets/images/modules/vehicle.png';
+        case 'letter_trace':
+        return 'assets/images/modules/trace.png';
+      case 'good_habits':
+        return 'assets/images/modules/good_habit.png';
+      case 'community_helpers':
+        return 'assets/images/modules/community_helper.png';
+      case 'indian_festivals':
+        return 'assets/images/modules/festival.png';
+      case 'directions':
+        return 'assets/images/modules/directions.png';
+      case 'story':
+        return 'assets/images/modules/story.png';
+      case 'puzzle':
+        return 'assets/images/modules/puzzle.png';
       default:
         return 'assets/images/modules/feeling.png';
     }
   }
 
+  Future<void> _openModule(BuildContext context, _HomeModule module) async {
+    final title = module.title.trim();
+    if (title.isNotEmpty) {
+      _keepSpeechThroughNextRoute = true;
+      // Finish warm-up first so speak hits the fast path and starts now —
+      // not after the kid has already opened a detail card.
+      final warm = _warmUpFuture;
+      if (warm != null) await warm;
+      if (!mounted) return;
+      AppSpeech.speak(context, title);
+    }
+    module.onTap();
+  }
+
   void _open(BuildContext context, Widget screen) {
     AppHapticFeedback.medium();
-    AppSpeech.interruptPlayback();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => screen),
     );
@@ -494,32 +585,27 @@ class _HomeLogoBadge extends StatelessWidget {
 
 class _HomeHeaderAction extends StatelessWidget {
   const _HomeHeaderAction({
-    required this.tooltip,
     required this.icon,
     required this.color,
     required this.onPressed,
   });
 
-  final String tooltip;
   final IconData icon;
   final Color color;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: color.withValues(alpha: 0.12),
-        shape: const CircleBorder(),
-        child: InkWell(
-          onTap: onPressed,
-          customBorder: const CircleBorder(),
-          child: SizedBox(
-            width: 38,
-            height: 38,
-            child: Icon(icon, color: color, size: 21),
-          ),
+    return Material(
+      color: color.withValues(alpha: 0.12),
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 38,
+          height: 38,
+          child: Icon(icon, color: color, size: 21),
         ),
       ),
     );

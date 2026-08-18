@@ -70,7 +70,6 @@ class BodyPartsScreen extends StatelessWidget {
             imageAsset: item.imageAsset,
             nameKey: item.nameKey,
             module: 'bodyParts',
-            dialogHintKey: 'bodyParts.dialog.hint',
           ),
         )
         .toList();

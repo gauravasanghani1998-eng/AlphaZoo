@@ -96,7 +96,6 @@ class _WeatherSeasonsScreenState extends State<WeatherSeasonsScreen> {
             emoji: item.emoji,
             nameKey: item.nameKey,
             module: 'weather',
-            dialogHintKey: 'weather.dialog.hint',
           ),
         )
         .toList();

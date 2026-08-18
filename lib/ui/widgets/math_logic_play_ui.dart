@@ -408,7 +408,7 @@ class MathPlayUi {
 
   static Widget _bigNumberChip(String value, Color color) {
     return Container(
-      width: 76,
+      width: value.runes.length >= 3 ? 96 : 76,
       height: 76,
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -425,12 +425,29 @@ class MathPlayUi {
       ),
       child: Text(
         value,
-        style: AppTextStyles.heading2.copyWith(
-          fontSize: 34,
+        style: _numberTextStyle(
+          fontSize: value.runes.length >= 3 ? 30 : 36,
           color: color,
-          fontWeight: FontWeight.w800,
         ),
       ),
+    );
+  }
+
+  /// Public single-number spotlight (double-it, next/prev count, …).
+  static Widget numberChip(String value, Color color) =>
+      _bigNumberChip(value, color);
+
+  /// Fredoka lacks Indic digits — Baloo 2 keeps १ / ८ / ૮ readable.
+  static TextStyle _numberTextStyle({
+    required double fontSize,
+    required Color color,
+  }) {
+    return AppTextStyles.bodyBold.copyWith(
+      fontSize: fontSize,
+      color: color,
+      fontWeight: FontWeight.w800,
+      height: 1.05,
+      letterSpacing: 0.5,
     );
   }
 
@@ -463,11 +480,9 @@ class MathPlayUi {
       maxLines: 1,
       softWrap: false,
       textAlign: TextAlign.center,
-      style: AppTextStyles.heading2.copyWith(
+      style: _numberTextStyle(
         fontSize: fontSize,
-        height: 1.1,
         color: isBlank ? accent : AppColors.textPrimary,
-        fontWeight: FontWeight.w800,
       ),
     );
 
@@ -628,10 +643,9 @@ class MathPlayUi {
         child: Center(
           child: Text(
             label,
-            style: AppTextStyles.heading2.copyWith(
-              fontSize: label.length <= 2 ? 30 : 22,
+            style: _numberTextStyle(
+              fontSize: label.length <= 2 ? 30 : 24,
               color: AppColors.textPrimary,
-              fontWeight: FontWeight.w800,
             ),
           ),
         ),

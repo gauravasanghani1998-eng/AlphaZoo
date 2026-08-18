@@ -68,7 +68,6 @@ class EmotionsScreen extends StatelessWidget {
             emoji: item.emoji,
             nameKey: item.nameKey,
             module: 'emotions',
-            dialogHintKey: 'emotions.dialog.hint',
           ),
         )
         .toList();

@@ -72,7 +72,6 @@ class VehiclesScreen extends StatelessWidget {
             nameKey: item.nameKey,
             module: 'vehicles',
             subtitleKey: item.subtitleKey,
-            dialogHintKey: 'vehicles.dialog.hint',
           ),
         )
         .toList();

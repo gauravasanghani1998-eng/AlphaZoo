@@ -9,7 +9,7 @@ import '../data/native_script_data.dart';
 import '../ui/models/learning_detail_page.dart';
 import 'number_detail_content.dart';
 
-/// Builds [LearningDetailPage] text from translation keys with safe fallbacks.
+/// Builds [LearningDetailPage] text from translation keys.
 class LearningDetailContent {
   LearningDetailContent._();
 
@@ -80,7 +80,7 @@ class LearningDetailContent {
     return parts.isNotEmpty ? parts.last : nameKey;
   }
 
-  /// Spelling tiles — uses per-word and per-category detail keys.
+  /// Spelling tiles — per-word detail keys (every word has about/funFact/try).
   static LearningDetailPage spellingItem({
     required String emoji,
     required String nameKey,
@@ -90,34 +90,13 @@ class LearningDetailContent {
     final id = _itemIdFromNameKey(nameKey);
     final args = {'name': name, 'category': category};
 
-    final about = _firstNonEmpty([
-      _trOrEmpty('spelling.$category.detail.$id.about', args: args),
-      _trOrEmpty('spelling.$category.detail.aboutTemplate', args: args),
-      _trOrEmpty('spelling.detail.aboutTemplate', args: args),
-    ]);
-
-    final funFact = _firstNonEmpty([
-      _trOrEmpty('spelling.$category.detail.$id.funFact', args: args),
-      _trOrEmpty('spelling.$category.detail.funFactTemplate', args: args),
-      _trOrEmpty('spelling.detail.funFactTemplate', args: args),
-      _trOrEmpty('learningDetail.defaultFunFact', args: args),
-    ]);
-
-    final tryThis = _firstNonEmpty([
-      _trOrEmpty('spelling.$category.detail.$id.try', args: args),
-      _trOrEmpty('spelling.$category.detail.tryTemplate', args: args),
-      _trOrEmpty('spelling.detail.tryTemplate', args: args),
-      _trOrEmpty('spelling.spellTogether'),
-      _trOrEmpty('learningDetail.defaultTry'),
-    ]);
-
     return LearningDetailPage(
       emoji: emoji,
       title: name,
       speakText: name,
-      about: about,
-      funFact: funFact,
-      tryThis: tryThis,
+      about: _trOrEmpty('spelling.$category.detail.$id.about', args: args),
+      funFact: _trOrEmpty('spelling.$category.detail.$id.funFact', args: args),
+      tryThis: _trOrEmpty('spelling.$category.detail.$id.try', args: args),
     );
   }
 
@@ -128,39 +107,11 @@ class LearningDetailContent {
     required String module,
     String? imageAsset,
     String? subtitleKey,
-    String dialogHintKey = '',
     Map<String, String> extraArgs = const {},
   }) {
     final name = nameKey.tr();
     final id = _itemIdFromNameKey(nameKey);
     final args = {'name': name, ...extraArgs};
-
-    final subtitle = subtitleKey != null ? _trOrEmpty(subtitleKey, args: args) : '';
-    final about = _firstNonEmpty([
-      _trOrEmpty('$module.detail.$id.about', args: args),
-      if (subtitle.isNotEmpty)
-        _trOrEmpty(
-          '$module.detail.aboutWithSubtitle',
-          args: {...args, 'subtitle': subtitle},
-        ),
-      if (subtitle.isNotEmpty) subtitle,
-      _trOrEmpty('$module.detail.aboutTemplate', args: args),
-      if (dialogHintKey.isNotEmpty)
-        _trOrEmpty(dialogHintKey, args: args),
-    ]);
-
-    final funFact = _firstNonEmpty([
-      _trOrEmpty('$module.detail.$id.funFact', args: args),
-      _trOrEmpty('$module.detail.funFactTemplate', args: args),
-      _trOrEmpty('learningDetail.defaultFunFact', args: args),
-    ]);
-
-    final tryThis = _firstNonEmpty([
-      _trOrEmpty('$module.detail.$id.try', args: args),
-      _trOrEmpty('$module.detail.tryTemplate', args: args),
-      _trOrEmpty('$module.tapAgain'),
-      _trOrEmpty('learningDetail.defaultTry'),
-    ]);
 
     final subtitleDisplay =
         subtitleKey != null ? _trOrEmpty(subtitleKey, args: args) : null;
@@ -191,9 +142,9 @@ class LearningDetailContent {
               ),
             )
           : null,
-      about: about,
-      funFact: funFact,
-      tryThis: tryThis,
+      about: _trOrEmpty('$module.detail.$id.about', args: args),
+      funFact: _trOrEmpty('$module.detail.$id.funFact', args: args),
+      tryThis: _trOrEmpty('$module.detail.$id.try', args: args),
     );
   }
 
@@ -237,21 +188,9 @@ class LearningDetailContent {
       speakText: '$left. $right.',
       heroInCircle: false,
       oppositePairLayout: true,
-      about: _firstNonEmpty([
-        _trOrEmpty('opposites.detail.$pairId.about', args: args),
-        _trOrEmpty('opposites.dialog.hint', args: args),
-        _trOrEmpty('opposites.detail.aboutTemplate', args: args),
-      ]),
-      funFact: _firstNonEmpty([
-        _trOrEmpty('opposites.detail.$pairId.funFact', args: args),
-        _trOrEmpty('opposites.detail.funFactTemplate', args: args),
-        _trOrEmpty('learningDetail.defaultFunFact'),
-      ]),
-      tryThis: _firstNonEmpty([
-        _trOrEmpty('opposites.detail.$pairId.try', args: args),
-        _trOrEmpty('opposites.detail.tryTemplate', args: args),
-        _trOrEmpty('opposites.tapAgain'),
-      ]),
+      about: _trOrEmpty('opposites.detail.$pairId.about', args: args),
+      funFact: _trOrEmpty('opposites.detail.$pairId.funFact', args: args),
+      tryThis: _trOrEmpty('opposites.detail.$pairId.try', args: args),
     );
   }
 
@@ -518,6 +457,33 @@ class LearningDetailContent {
     return '';
   }
 
+  /// Teaching phrase for TTS (e.g. ક કમળનો ક) in the script's speak locale.
+  static String nativeScriptSpeakPhrase({
+    required String category,
+    required String id,
+    required String glyph,
+    required String uiLanguageCode,
+  }) {
+    final args = {
+      'name': glyph,
+      'glyph': glyph,
+      'roman': '',
+      'w1': '',
+      'w2': '',
+      'w3': '',
+    };
+    return _firstNonEmpty([
+      _scriptSpeakPhrase(
+        category: category,
+        id: id,
+        glyph: glyph,
+        uiLanguageCode: uiLanguageCode,
+        args: args,
+      ),
+      glyph,
+    ]);
+  }
+
   static LearningDetailPage scriptChar({
     required String id,
     required String glyph,
@@ -527,7 +493,6 @@ class LearningDetailContent {
     required String uiLanguageCode,
     double heroFontSize = 72,
   }) {
-    final isSwar = category == 'swar';
     final exampleWords = _scriptExampleWords(id);
     final args = {
       'name': glyph,
@@ -538,21 +503,10 @@ class LearningDetailContent {
       'w3': exampleWords.length > 2 ? exampleWords[2] : '',
     };
 
-    final about = _firstNonEmpty([
-      _trOrEmpty('nativeScript.detail.$category.$id.about', args: args),
-      _trOrEmpty(
-        isSwar
-            ? 'nativeScript.detail.aboutSwarTemplate'
-            : 'nativeScript.detail.aboutKakkoTemplate',
-        args: args,
-      ),
-    ]);
-
-    final funFact = _firstNonEmpty([
-      _trOrEmpty('nativeScript.detail.$category.$id.funFact', args: args),
-      _trOrEmpty('nativeScript.detail.funFactTemplate', args: args),
-      _trOrEmpty('learningDetail.defaultFunFact', args: args),
-    ]);
+    final about =
+        _trOrEmpty('nativeScript.detail.$category.$id.about', args: args);
+    final funFact =
+        _trOrEmpty('nativeScript.detail.$category.$id.funFact', args: args);
 
     final tryThis = '';
 
@@ -615,19 +569,18 @@ class LearningDetailContent {
       speakText: label,
       about: _firstNonEmpty([
         _trOrEmpty('$module.detail.$itemId.about', args: args),
+        // Regional months (Hindu/Tamil) use templates — no per-item keys.
         _trOrEmpty('$module.detail.aboutTemplate', args: args),
         if (dialogHintKey.isNotEmpty) _trOrEmpty(dialogHintKey, args: args),
       ]),
       funFact: _firstNonEmpty([
         _trOrEmpty('$module.detail.$itemId.funFact', args: args),
         _trOrEmpty('$module.detail.funFactTemplate', args: args),
-        _trOrEmpty('learningDetail.defaultFunFact', args: args),
       ]),
       tryThis: _firstNonEmpty([
         _trOrEmpty('$module.detail.$itemId.try', args: args),
         _trOrEmpty('$module.detail.tryTemplate', args: args),
         _trOrEmpty('$module.readTogether', args: args),
-        _trOrEmpty('learningDetail.defaultTry'),
       ]),
     );
   }

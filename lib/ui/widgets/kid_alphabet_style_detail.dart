@@ -858,26 +858,29 @@ class KidAlphabetStyleDetail {
     required VoidCallback? onPrevious,
     required VoidCallback? onNext,
     Animation<double>? scaleAnimation,
+    BoxDecoration? barDecoration,
   }) {
+    final whiteWhenDisabled = barDecoration != null;
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: responsive.horizontalPadding,
-        vertical: 16,
+        vertical: 14,
       ),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [navBarGradientTop, navBarGradientBottom],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+      decoration: barDecoration ??
+          const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [navBarGradientTop, navBarGradientBottom],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x1AFF9800),
+                blurRadius: 10,
+                offset: Offset(0, -2),
+              ),
+            ],
           ),
-        ],
-      ),
       child: Row(
         children: [
           Expanded(
@@ -889,6 +892,7 @@ class KidAlphabetStyleDetail {
               isNext: false,
               onTap: onPrevious,
               scaleAnimation: scaleAnimation,
+              whiteWhenDisabled: whiteWhenDisabled,
             ),
           ),
           const SizedBox(width: 16),
@@ -901,6 +905,7 @@ class KidAlphabetStyleDetail {
               isNext: true,
               onTap: onNext,
               scaleAnimation: scaleAnimation,
+              whiteWhenDisabled: whiteWhenDisabled,
             ),
           ),
         ],
@@ -916,7 +921,13 @@ class KidAlphabetStyleDetail {
     required bool isNext,
     required VoidCallback? onTap,
     Animation<double>? scaleAnimation,
+    bool whiteWhenDisabled = false,
   }) {
+    final labelColor = enabled
+        ? Colors.white
+        : (whiteWhenDisabled
+            ? Colors.grey.shade700
+            : Colors.grey.shade600);
     Widget button = Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
@@ -925,8 +936,13 @@ class KidAlphabetStyleDetail {
                 colors: [accentColor, accentColor.withValues(alpha: 0.8)],
               )
             : null,
-        color: enabled ? null : Colors.grey.shade300,
+        color: enabled
+            ? null
+            : (whiteWhenDisabled ? Colors.white : Colors.grey.shade300),
         borderRadius: BorderRadius.circular(16),
+        border: !enabled && whiteWhenDisabled
+            ? Border.all(color: accentColor.withValues(alpha: 0.22))
+            : null,
         boxShadow: enabled
             ? [
                 BoxShadow(
@@ -940,18 +956,18 @@ class KidAlphabetStyleDetail {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!isNext) Icon(icon, color: Colors.white, size: 20),
+          if (!isNext) Icon(icon, color: labelColor, size: 20),
           if (!isNext) const SizedBox(width: 8),
           Text(
             label,
             style: AppTextStyles.button.copyWith(
-              color: enabled ? Colors.white : Colors.grey.shade600,
+              color: labelColor,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           if (isNext) const SizedBox(width: 8),
-          if (isNext) Icon(icon, color: Colors.white, size: 20),
+          if (isNext) Icon(icon, color: labelColor, size: 20),
         ],
       ),
     );

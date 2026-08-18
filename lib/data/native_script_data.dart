@@ -48,6 +48,30 @@ class NativeScriptData {
   }
 
   /// TTS / speak phrase language (may differ from UI locale, e.g. en UI → gu).
+  static List<NativeScriptChar> charsForCategory(
+    String languageCode,
+    String category,
+  ) {
+    return category == 'swar'
+        ? swarFor(languageCode)
+        : kakkoFor(languageCode);
+  }
+
+  /// Languages that show Swar/Kakko tracing in Trace & Write.
+  static bool supportsTraceLocale(String languageCode) {
+    switch (languageCode) {
+      case 'gu':
+      case 'hi':
+      case 'mr':
+      case 'ta':
+      case 'pa':
+      case 'en':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   static String speakLocaleFor(String uiLanguageCode) {
     switch (familyFor(uiLanguageCode)) {
       case NativeScriptFamily.gujarati:
@@ -184,6 +208,7 @@ class NativeScriptData {
     NativeScriptChar(id: 'gnya', glyph: 'ਗਿਆ', romanKey: 'nativeScript.roman.kakko.gnya'),
   ];
 
+  /// Tamil uyir (12 vowels) + aytam. School order — includes ஏ / ஓ.
   static const List<NativeScriptChar> _tamilSwar = [
     NativeScriptChar(id: 'a', glyph: 'அ', romanKey: 'nativeScript.roman.swar.a'),
     NativeScriptChar(id: 'aa', glyph: 'ஆ', romanKey: 'nativeScript.roman.swar.aa'),
@@ -192,48 +217,40 @@ class NativeScriptData {
     NativeScriptChar(id: 'u', glyph: 'உ', romanKey: 'nativeScript.roman.swar.u'),
     NativeScriptChar(id: 'uu', glyph: 'ஊ', romanKey: 'nativeScript.roman.swar.uu'),
     NativeScriptChar(id: 'e', glyph: 'எ', romanKey: 'nativeScript.roman.swar.e'),
+    NativeScriptChar(id: 'ee', glyph: 'ஏ', romanKey: 'nativeScript.roman.swar.ee'),
     NativeScriptChar(id: 'ai', glyph: 'ஐ', romanKey: 'nativeScript.roman.swar.ai'),
     NativeScriptChar(id: 'o', glyph: 'ஒ', romanKey: 'nativeScript.roman.swar.o'),
+    NativeScriptChar(id: 'oo', glyph: 'ஓ', romanKey: 'nativeScript.roman.swar.oo'),
     NativeScriptChar(id: 'au', glyph: 'ஔ', romanKey: 'nativeScript.roman.swar.au'),
-    NativeScriptChar(id: 'am', glyph: '\u0B82', romanKey: 'nativeScript.roman.swar.am'),
+    NativeScriptChar(id: 'am', glyph: 'அம்', romanKey: 'nativeScript.roman.swar.am'),
     NativeScriptChar(id: 'aha', glyph: 'ஃ', romanKey: 'nativeScript.roman.swar.aha'),
   ];
 
+  /// Tamil mei (18) + common Grantha letters — every glyph unique.
   static const List<NativeScriptChar> _tamilKakko = [
     NativeScriptChar(id: 'ka', glyph: 'க', romanKey: 'nativeScript.roman.kakko.ka'),
-    NativeScriptChar(id: 'kha', glyph: 'க', romanKey: 'nativeScript.roman.kakko.kha'),
-    NativeScriptChar(id: 'ga', glyph: 'க', romanKey: 'nativeScript.roman.kakko.ga'),
-    NativeScriptChar(id: 'gha', glyph: 'க', romanKey: 'nativeScript.roman.kakko.gha'),
+    NativeScriptChar(id: 'nga', glyph: 'ங', romanKey: 'nativeScript.roman.kakko.nga'),
     NativeScriptChar(id: 'cha', glyph: 'ச', romanKey: 'nativeScript.roman.kakko.cha'),
-    NativeScriptChar(id: 'chha', glyph: 'ச', romanKey: 'nativeScript.roman.kakko.chha'),
-    NativeScriptChar(id: 'ja', glyph: 'ஜ', romanKey: 'nativeScript.roman.kakko.ja'),
-    NativeScriptChar(id: 'jha', glyph: 'ஜ', romanKey: 'nativeScript.roman.kakko.jha'),
+    NativeScriptChar(id: 'gnya', glyph: 'ஞ', romanKey: 'nativeScript.roman.kakko.gnya'),
     NativeScriptChar(id: 'tta', glyph: 'ட', romanKey: 'nativeScript.roman.kakko.tta'),
-    NativeScriptChar(id: 'ttha', glyph: 'ட', romanKey: 'nativeScript.roman.kakko.ttha'),
-    NativeScriptChar(id: 'dda', glyph: 'ட', romanKey: 'nativeScript.roman.kakko.dda'),
-    NativeScriptChar(id: 'ddha', glyph: 'ட', romanKey: 'nativeScript.roman.kakko.ddha'),
     NativeScriptChar(id: 'nna', glyph: 'ண', romanKey: 'nativeScript.roman.kakko.nna'),
     NativeScriptChar(id: 'ta', glyph: 'த', romanKey: 'nativeScript.roman.kakko.ta'),
-    NativeScriptChar(id: 'tha', glyph: 'த', romanKey: 'nativeScript.roman.kakko.tha'),
-    NativeScriptChar(id: 'da', glyph: 'த', romanKey: 'nativeScript.roman.kakko.da'),
-    NativeScriptChar(id: 'dha', glyph: 'த', romanKey: 'nativeScript.roman.kakko.dha'),
     NativeScriptChar(id: 'na', glyph: 'ந', romanKey: 'nativeScript.roman.kakko.na'),
     NativeScriptChar(id: 'pa', glyph: 'ப', romanKey: 'nativeScript.roman.kakko.pa'),
-    NativeScriptChar(id: 'pha', glyph: 'ப', romanKey: 'nativeScript.roman.kakko.pha'),
-    NativeScriptChar(id: 'ba', glyph: 'ப', romanKey: 'nativeScript.roman.kakko.ba'),
-    NativeScriptChar(id: 'bha', glyph: 'ப', romanKey: 'nativeScript.roman.kakko.bha'),
     NativeScriptChar(id: 'ma', glyph: 'ம', romanKey: 'nativeScript.roman.kakko.ma'),
     NativeScriptChar(id: 'ya', glyph: 'ய', romanKey: 'nativeScript.roman.kakko.ya'),
     NativeScriptChar(id: 'ra', glyph: 'ர', romanKey: 'nativeScript.roman.kakko.ra'),
     NativeScriptChar(id: 'la', glyph: 'ல', romanKey: 'nativeScript.roman.kakko.la'),
     NativeScriptChar(id: 'va', glyph: 'வ', romanKey: 'nativeScript.roman.kakko.va'),
-    NativeScriptChar(id: 'sha', glyph: 'ஷ', romanKey: 'nativeScript.roman.kakko.sha'),
+    NativeScriptChar(id: 'zha', glyph: 'ழ', romanKey: 'nativeScript.roman.kakko.zha'),
+    NativeScriptChar(id: 'lla', glyph: 'ள', romanKey: 'nativeScript.roman.kakko.lla'),
+    NativeScriptChar(id: 'rra', glyph: 'ற', romanKey: 'nativeScript.roman.kakko.rra'),
+    NativeScriptChar(id: 'nnna', glyph: 'ன', romanKey: 'nativeScript.roman.kakko.nnna'),
+    NativeScriptChar(id: 'ja', glyph: 'ஜ', romanKey: 'nativeScript.roman.kakko.ja'),
     NativeScriptChar(id: 'ssha', glyph: 'ஷ', romanKey: 'nativeScript.roman.kakko.ssha'),
     NativeScriptChar(id: 'sa', glyph: 'ஸ', romanKey: 'nativeScript.roman.kakko.sa'),
     NativeScriptChar(id: 'ha', glyph: 'ஹ', romanKey: 'nativeScript.roman.kakko.ha'),
-    NativeScriptChar(id: 'lla', glyph: 'ள', romanKey: 'nativeScript.roman.kakko.lla'),
     NativeScriptChar(id: 'ksha', glyph: 'க்ஷ', romanKey: 'nativeScript.roman.kakko.ksha'),
-    NativeScriptChar(id: 'gnya', glyph: 'ஞ', romanKey: 'nativeScript.roman.kakko.gnya'),
   ];
 
   static final Map<NativeScriptFamily, List<NativeScriptChar>> _swar = {

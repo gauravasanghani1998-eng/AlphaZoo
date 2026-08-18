@@ -243,15 +243,5 @@ class AlphabetData {
     return items[0];
   }
 
-  static AlphabetItem? getItemByLetter(String letter) {
-    try {
-      return items.firstWhere(
-        (item) => item.letter.toLowerCase() == letter.toLowerCase(),
-      );
-    } catch (e) {
-      return null;
-    }
-  }
-
   static int get count => items.length;
 }

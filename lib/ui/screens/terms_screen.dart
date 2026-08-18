@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_colors.dart';
@@ -10,6 +11,7 @@ class TermsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final title = 'legal.terms.title'.tr();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -23,7 +25,7 @@ class TermsScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Terms & Conditions',
+          title,
           style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
         ),
         centerTitle: true,
@@ -37,61 +39,35 @@ class TermsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Terms & Conditions',
-                style: AppTextStyles.heading1,
-              ),
+              Text(title, style: AppTextStyles.heading1),
               const SizedBox(height: 8),
               Text(
-                'Last updated: March 2026',
+                'legal.terms.lastUpdated'.tr(),
                 style: AppTextStyles.caption,
               ),
               const SizedBox(height: 16),
-              _sectionBody(
-                'These Terms & Conditions govern your use of the Kids Learning World mobile application. '
-                'By installing or using the app, you agree to these terms.',
-              ),
+              _sectionBody('legal.terms.intro'.tr()),
               const SizedBox(height: 16),
-              _sectionTitle('1. Educational use only'),
-              _sectionBody(
-                'Kids Learning World is provided for personal, non‑commercial educational use. '
-                'You may not use the app for any unlawful or harmful purpose.',
-              ),
+              _sectionTitle('legal.terms.s1Title'.tr()),
+              _sectionBody('legal.terms.s1Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('2. Content and ownership'),
-              _sectionBody(
-                'All graphics, text, sounds and other content in Kids Learning World are owned by the developer or licensed for use in the app. '
-                'You may not copy, redistribute, sell, or otherwise exploit the content except as allowed by normal use of the app.',
-              ),
+              _sectionTitle('legal.terms.s2Title'.tr()),
+              _sectionBody('legal.terms.s2Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('3. No warranty'),
-              _sectionBody(
-                'The app is provided “as is” without any warranties of any kind. '
-                'We do not guarantee that the app will be error‑free or available on all devices.',
-              ),
+              _sectionTitle('legal.terms.s3Title'.tr()),
+              _sectionBody('legal.terms.s3Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('4. Limitation of liability'),
-              _sectionBody(
-                'To the maximum extent permitted by law, the developer is not liable for any direct or indirect damages '
-                'arising from the use or inability to use the app, including loss of data or device issues.',
-              ),
+              _sectionTitle('legal.terms.s4Title'.tr()),
+              _sectionBody('legal.terms.s4Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('5. Changes to the app and terms'),
-              _sectionBody(
-                'Features in Kids Learning World may change or be updated over time. We may update these Terms & Conditions as needed. '
-                'Continued use of the app after changes means you accept the updated terms.',
-              ),
+              _sectionTitle('legal.terms.s5Title'.tr()),
+              _sectionBody('legal.terms.s5Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('6. Children and supervision'),
-              _sectionBody(
-                'Kids Learning World is designed for children, but it should be used under the guidance of a parent, guardian or teacher. '
-                'Adults are responsible for supervising children’s use of the app and the device.',
-              ),
+              _sectionTitle('legal.terms.s6Title'.tr()),
+              _sectionBody('legal.terms.s6Body'.tr()),
               const SizedBox(height: 12),
-              _sectionTitle('7. Contact'),
-              _sectionBody(
-                'If you have any questions about these Terms & Conditions, you can contact the developer using the email address provided in the store listing.',
-              ),
+              _sectionTitle('legal.terms.s7Title'.tr()),
+              _sectionBody('legal.terms.s7Body'.tr()),
             ],
           ),
         ),
@@ -113,4 +89,3 @@ class TermsScreen extends StatelessWidget {
     );
   }
 }
-

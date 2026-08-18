@@ -272,6 +272,21 @@ class _MathLogicGameScreenState extends State<MathLogicGameScreen> {
               accent: accent,
             ),
           ),
+        if ((widget.activityId == MathActivityId.doubleIt ||
+                widget.activityId == MathActivityId.forwardCount ||
+                widget.activityId == MathActivityId.backwardCount) &&
+            round.instructionArgs != null &&
+            round.instructionArgs!.containsKey('number'))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: MathPlayUi.numberChip(
+              MathLogicDigits.formatText(
+                context,
+                round.instructionArgs!['number']!,
+              ),
+              accent,
+            ),
+          ),
         if (widget.activityId == MathActivityId.fillAddition &&
             round.instructionArgs != null)
           Padding(
@@ -279,9 +294,11 @@ class _MathLogicGameScreenState extends State<MathLogicGameScreen> {
             child: Text(
               '${MathLogicDigits.formatText(context, round.instructionArgs!['a']!)} + '
               '${MathLogicDigits.formatText(context, round.instructionArgs!['b']!)} = ?',
-              style: AppTextStyles.heading2.copyWith(
+              style: AppTextStyles.bodyBold.copyWith(
                 fontSize: 36,
                 color: accent,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
               ),
             ),
           ),
@@ -292,9 +309,11 @@ class _MathLogicGameScreenState extends State<MathLogicGameScreen> {
             child: Text(
               '${MathLogicDigits.formatText(context, round.instructionArgs!['a']!)} − '
               '${MathLogicDigits.formatText(context, round.instructionArgs!['b']!)} = ?',
-              style: AppTextStyles.heading2.copyWith(
+              style: AppTextStyles.bodyBold.copyWith(
                 fontSize: 36,
                 color: accent,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
               ),
             ),
           ),

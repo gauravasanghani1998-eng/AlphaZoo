@@ -82,7 +82,6 @@ class NumberDetailContent {
     return _firstNonEmpty([
       _trOrEmpty('numbers.detail.$id.about', args),
       _trOrEmpty('numbers.detail.bands.${_bandKey(value)}.about', args),
-      _trOrEmpty('numbers.detail.aboutTemplate', args),
     ]);
   }
 
@@ -103,7 +102,6 @@ class NumberDetailContent {
       _trOrEmpty('numbers.detail.$id.try', args),
       _trOrEmpty('numbers.detail.bands.${_bandKey(value)}.try', args),
       _poolLine('numbers.detail.tries', value, args),
-      _trOrEmpty('numbers.detail.tryTemplate', args),
       'numbers.dialog.hint'.tr(),
     ]);
   }

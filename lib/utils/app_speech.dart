@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-/// Tap-to-hear speech in the app's selected language.
+import 'indic_romanizer.dart';
+
 class AppSpeech {
   AppSpeech._();
 
@@ -17,6 +18,10 @@ class AppSpeech {
   static int _cancelToken = 0;
   /// Latest tap wins when multiple [speak] calls overlap on one screen.
   static int _speakSeq = 0;
+
+  /// True while TTS is actively speaking (for play / pause UI).
+  static final ValueNotifier<bool> isSpeaking = ValueNotifier(false);
+  static bool _handlersBound = false;
 
   /// Stops speech when any route is popped (detail screen back, etc.).
   static final NavigatorObserver stopOnPopObserver = _StopOnPopObserver();
@@ -108,6 +113,18 @@ class AppSpeech {
         await _tts.setEngine('com.google.android.tts');
       } catch (_) {}
     }
+    if (!_handlersBound) {
+      _handlersBound = true;
+      _tts.setStartHandler(() {
+        isSpeaking.value = true;
+      });
+      _tts.setCompletionHandler(() {
+        isSpeaking.value = false;
+      });
+      _tts.setCancelHandler(() {
+        isSpeaking.value = false;
+      });
+    }
     _initialized = true;
   }
 
@@ -167,15 +184,18 @@ class AppSpeech {
 
   static Future<void> _prepareForLocale(Locale locale, {required bool rhyme}) async {
     await _ensureInitialized();
-    _rhymePlayback = rhyme;
 
     final configKey = '${locale.languageCode.toLowerCase()}-$rhyme';
-    if (_activeConfigKey != configKey) {
-      _activeTtsCode = await _configureForLocale(locale);
-      _activeConfigKey = configKey;
-      if (_activeTtsCode != null) {
-        await _pickBestVoiceForLanguage(_activeTtsCode!);
-      }
+    // Already configured — skip platform calls so speech starts instantly.
+    if (_activeConfigKey == configKey) {
+      _rhymePlayback = rhyme;
+      return;
+    }
+
+    _rhymePlayback = rhyme;
+    _activeTtsCode = await _configureForLocale(locale);
+    if (_activeTtsCode != null) {
+      await _pickBestVoiceForLanguage(_activeTtsCode!);
     }
 
     final langCode = _activeTtsCode ?? locale.languageCode;
@@ -194,10 +214,14 @@ class AppSpeech {
         await _tts.setVoice(cached);
       }
     }
+
+    _activeConfigKey = configKey;
   }
 
   /// Speaks [text]. Use [languageCode] when the phrase is in another language
   /// (e.g. Gujarati script while UI is English).
+  ///
+  /// Returns after the utterance finishes (or is cancelled by a newer speak).
   static Future<void> speak(
     BuildContext context,
     String text, {
@@ -209,25 +233,98 @@ class AppSpeech {
     final locale = languageCode != null
         ? Locale(languageCode)
         : Localizations.localeOf(context);
-    await _tts.stop();
     final cancel = _cancelToken;
+
+    // Warm path: locale already ready — stop + speak with no extra setup.
+    final readyKey = '${locale.languageCode.toLowerCase()}-false';
+    if (_activeConfigKey == readyKey) {
+      await _tts.stop();
+      if (cancel != _cancelToken || seq != _speakSeq) return;
+      await _tts.speak(text);
+      return;
+    }
+
+    await _tts.stop();
     await _prepareForLocale(locale, rhyme: false);
     if (cancel != _cancelToken || seq != _speakSeq) return;
     await _tts.speak(text);
   }
 
+  /// Speaks mixed English + Indic learning lines smoothly in one utterance.
+  ///
+  /// Switching TTS languages mid-sentence causes pauses ("atak"). For English
+  /// (and other Latin UI) we romanize Indic words and speak once. When the UI
+  /// is already an Indic language, we speak the native text as-is.
+  static Future<void> speakMixed(
+    BuildContext context,
+    String text, {
+    String? scriptLanguageCode,
+  }) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+
+    final uiLang = Localizations.localeOf(context).languageCode.toLowerCase();
+
+    if (!IndicRomanizer.containsIndic(trimmed)) {
+      await speak(context, trimmed);
+      return;
+    }
+
+    // Native UI (gu/hi/…) — sentence is already in that script; one shot.
+    if (_isIndicUiLanguage(uiLang)) {
+      await speak(
+        context,
+        trimmed,
+        languageCode: scriptLanguageCode ?? uiLang,
+      );
+      return;
+    }
+
+    // English UI: "ઘ is for ઘર — …" → "gha is for ghar — …" (smooth English TTS)
+    final smooth = IndicRomanizer.forTts(trimmed);
+    await speak(context, smooth, languageCode: uiLang);
+  }
+
+  static bool _isIndicUiLanguage(String lang) {
+    return lang == 'gu' ||
+        lang == 'hi' ||
+        lang == 'mr' ||
+        lang == 'ta' ||
+        lang == 'pa';
+  }
+
+  /// Speaks each phrase fully before starting the next — for kids learning.
+  /// Stops early if [isCurrent] returns false or [context] is unmounted.
+  static Future<void> speakSequence(
+    BuildContext context,
+    List<String> phrases, {
+    String? languageCode,
+    bool Function()? isCurrent,
+  }) async {
+    for (final raw in phrases) {
+      final text = raw.trim();
+      if (text.isEmpty) continue;
+      if (isCurrent != null && !isCurrent()) return;
+      if (!context.mounted) return;
+      await speak(context, text, languageCode: languageCode);
+    }
+  }
+
   /// Stops audio only — does not cancel the next card's pending speech.
   static Future<void> interruptPlayback() async {
+    isSpeaking.value = false;
     await _tts.stop();
   }
 
   static Future<void> stop() async {
     _cancelToken++;
     _speakSeq++;
+    isSpeaking.value = false;
     await _tts.stop();
     if (_rhymePlayback) {
       _rhymePlayback = false;
       await _applyNormalVoice(languageCode: _activeTtsCode);
+      _markNormalConfigActive();
     }
   }
 
@@ -291,6 +388,16 @@ class AppSpeech {
     } finally {
       _rhymePlayback = false;
       await _applyNormalVoice(languageCode: _activeTtsCode);
+      _activeConfigKey = '${locale.languageCode.toLowerCase()}-false';
+    }
+  }
+
+  /// After leaving rhyme mode, next [speak] can use the warm fast-path.
+  static void _markNormalConfigActive() {
+    final key = _activeConfigKey;
+    if (key == null) return;
+    if (key.endsWith('-true')) {
+      _activeConfigKey = '${key.substring(0, key.length - 5)}false';
     }
   }
 

@@ -127,9 +127,10 @@ class _KidLearningDetailScreenState extends State<KidLearningDetailScreen>
       );
 
   void _speakSection(String title, String body) {
-    AppSpeech.speak(
+    AppSpeech.speakMixed(
       context,
       KidAlphabetStyleDetail.sectionSpeakText(title, body),
+      scriptLanguageCode: _page.speakLanguageCode,
     );
   }
 
